@@ -11,22 +11,20 @@ def get_pic_click(_type, request_num, page_min):
     """
     :param _type:  save  or  view
     :param filter_cnt:   seq最大长度，超过的部分不计算。
-    :return: dict_bias  {pic1: {key: [a, b]}}  key: 图片出现的位置， a 图片呈现次数， b图片被点击次数
+    :return: dict_bias  {pic1: {key: [a, b]}}  key: 图片出现的位置， a图片呈现次数， b图片被点击次数
     :return:  page_min  pic至少出现的次数
     """
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     source_path = cf.get('dataset', 'path')
-    chart_data = cf.get('dataset', 'chart')
-    action = int(cf.get('type', 'type'))
 
     #TODO： 此处要修改， else 的默认为 result
     if _type == 'save':
         name = 'pic_raw'
         name2 = 'result_raw'
     else:
-        name = 'pic_raw'
-        name2 = 'result_raw'
+        name = 'pic'
+        name2 = 'result'
     dict_bias = {}
     filter_cnt = request_num * 36
     fin_pic = codecs.open(source_path+name, 'r', encoding='UTF-8')
@@ -66,12 +64,12 @@ def get_pic_click(_type, request_num, page_min):
     fout.close()
 
 
-def find_pic(max_pos_num, min_pos_num, min_click_num, variance):
+def find_pic(min_pos_num, min_click_num, variance):
     flag = False
     key_pic = None
     list_key_pic = []
     set_pic = set()
-    dict_bias = {}
+    dict_bias = {}     # {pic : [[1, 4, 9], [0.3, 0.25, 0.11]], pic2: [[], []]}
 
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
@@ -81,80 +79,77 @@ def find_pic(max_pos_num, min_pos_num, min_click_num, variance):
     dict_raw = eval(fin.readline())
     fin.close()
 
-    # 去除每张图片呈现非常少的二元组
+    # 去除每张图片呈现非常少的二元组, 构造存放图片出现位置和点击概率的字典 pic: [[], []]
     for pic in dict_raw:
-        dict_temp = {}
+        list_pic_page_prob = []
         for page in dict_raw[pic]:
             if dict_raw[pic][page][0] > min_click_num:
-                dict_temp[page] = dict_raw[pic][page]
-        if len(dict_temp) > min_pos_num:
-            dict_bias[pic] = dict_temp
+                probability_temp = float(dict_raw[pic][page][1])/dict_raw[pic][page][0]
+                temp_prob = [page, round(probability_temp, 3)]
+                list_pic_page_prob.append(temp_prob)
+        if len(list_pic_page_prob) > min_pos_num:
+            list_pic_page_prob.sort(key=lambda x: x[0])
+            sorted_page = []
+            sorted_prob = []
+            for i in range(0, len(list_pic_page_prob)):
+                sorted_page.append(list_pic_page_prob[i][0])
+                sorted_prob.append(list_pic_page_prob[i][1])
+            sorted_page_prob = [sorted_page, sorted_prob]
+            dict_bias[pic] = sorted_page_prob
 
     while not flag:
         key_pic = choice(dict_bias.keys())
-        if min_pos_num < len(dict_bias[key_pic]) < max_pos_num:
+        if min_pos_num < len(dict_bias[key_pic][0]):
             flag = True
-    for i in dict_bias[key_pic]:
-        list_key_pic.append(i)
-    list_key_pic.sort()
-    print key_pic, list_key_pic
-    len_key_pic = len(dict_bias[key_pic])
-    for i in dict_bias:
-        if len(dict_bias[i]) < min_pos_num:
+    len_key_pic = len(dict_bias[key_pic][0])
+    list_key_pic = dict_bias[key_pic]
+    for pic in dict_bias:
+        if len(dict_bias[pic][0]) < min_pos_num:
             continue
-        elif len(dict_bias[i]) > max_pos_num:
+        flag = True
+        temp_prob = dict_bias[pic][1]
+        for i in range(0, len(temp_prob)-1):
+            if temp_prob[i+1] > temp_prob[i]:
+                flag = False
+                break
+        if not flag:
             continue
-        else:
-            total = 0
-            list_temp_pic = []
-            for j in dict_bias[i]:
-                list_temp_pic.append(j)
-            list_temp_pic.sort()
-            len_temp = len(list_temp_pic)
-            if len_temp < len_key_pic:
-                small = len_temp
-                small_list = list_temp_pic
-                large = len_key_pic
-                large_list = list_key_pic
-            else:
-                small = len_key_pic
-                small_list = list_key_pic
-                large = len_temp
-                large_list = list_temp_pic
-            for j in range(0, small):
-                min_variance = abs(large_list[j] - small_list[j])
-                k = j
-                while True:
-                    k += 1
-                    if k >= large:
-                        total += min_variance
-                        break
-                    temp = abs(large_list[k] - small_list[j])
-                    if temp >= min_variance:
-                        total += min_variance
-                        break
-                    else:
-                        min_variance = temp
-        if total < variance:
-            set_pic.add(i)
+        set_pic.add(pic)
+        # flag = False  # 记录A是否一直在B上方
+        # is_positive = False  # 记录AB那一条线在上方
+        # list_temp_pic = dict_bias[pic]
+        # step = 4
+        # len_temp_pic = len(dict_bias[pic][0])
+        # if len_key_pic < len_temp_pic:
+        #     small_len = len_key_pic
+        # else:
+        #     small_len = len_temp_pic
+        # for i in range(0, (small_len+step-1)/step):   # 此处的step为步幅，每次比对step个单位内AB是否满足A最大值小于B最小值
+        #     key_pos = 0
+        #     temp_pos = i * step + step
+        #     for j in range(i*step, i*step+step):
+        #         if j in list_key_pic[0]:   # 找到step范围内key_pic的最小值
+        #             key_pos = j
+        #         if j in list_temp_pic[0]:     # 找到step范围内temp_pic的最大值
+        #             if temp_pos > j:
+        #                 temp_pos = j
+        #     if
+
     print set_pic
     fout = codecs.open(chart_data+'pic_position_bias.log', 'w', encoding='UTF-8')
-    fout.write('column: \n')
+    fout.write('line: \n')
+    # for pic in set_pic:
+    #     output = []
+    #     for item in dict_bias[pic]:
+    #         output.append([item, dict_bias[pic][item][0]])
+    #         output.sort(key=lambda x: x[0])
+    #     fout.write("{ name: '" + pic + "', type: 'column', yAxis: 1,  data: ")
+    #     fout.write(str(output))
+    #     fout.write('}, \n')
     for pic in set_pic:
         output = []
-        for item in dict_bias[pic]:
-            output.append([item, dict_bias[pic][item][0]])
-            output.sort(key=lambda x: x[0])
-        fout.write("{ name: '" + pic + "', type: 'column', yAxis: 1,  data: ")
-        fout.write(str(output))
-        fout.write('}, \n')
-    fout.write('\n \n line: \n')
-    for pic in set_pic:
-        output = []
-        for item in dict_bias[pic]:
-            probability = float(dict_bias[pic][item][1])/dict_bias[pic][item][0]
-            output.append([item, round(probability, 3)])
-            output.sort(key=lambda x: x[0])
+        for i in range(0, len(dict_bias[pic][0])):
+            output.append([dict_bias[pic][0][i], dict_bias[pic][1][i]])
         fout.write("{ name: '" + pic + "', data: ")
         fout.write(str(output))
         fout.write('}, \n')
