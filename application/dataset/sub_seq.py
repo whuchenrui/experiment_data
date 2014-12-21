@@ -98,6 +98,8 @@ def get_sub_seq():
     source_path = cf.get('dataset', 'path')
     chart_data = cf.get('dataset', 'chart')
     action = int(cf.get('type', 'type'))
+    sub_seq_length = float(cf.get('percent', 'sub_seq_length'))
+    sub_seq_percent = float(cf.get('percent', 'sub_seq_percent'))
 
     fin = codecs.open(source_path+'result_raw', 'r', encoding='utf-8')
     total = 0
@@ -135,7 +137,8 @@ def get_sub_seq():
             temp += ratio
         temp_output = round(temp, 3)
         b.append([i, temp_output])
-        if temp < 0.9:
+        # TODO: 修改删除条件 原先为0.9
+        if temp < sub_seq_length:
             rule_length = i
     fout = codecs.open(chart_data+'seq_of_1.log', 'w', encoding='utf-8')
     fout.write('picture 1:\n')
@@ -159,7 +162,8 @@ def get_sub_seq():
             temp += ratio
         temp_output = round(temp, 3)
         b.append([i, temp_output])
-        if temp < 0.9:
+        # TODO: 修改删除条件  原先为0.9
+        if temp < sub_seq_percent:
             rule_percent = i
     fout.write('picture 2:\n')
     fout.write('ratio of this percentage:\n')
@@ -184,8 +188,8 @@ def filter_rule(line, action, max_length, percent):
     elif int((float(max_len)/length)*100) > percent:
         return False
     # TODO: 暂时注释 click/view<0.01 过滤条件
-    elif (float(click_num)/length) < 0.01:
-        return False
+    # elif (float(click_num)/length) < 0.01:
+    #     return False
     return True
 
 

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<meta charset="UTF-8">
+<head>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/exporting.js"></script>
+</head>
+<body>
+    <div id="container" style="min-width:700px;height:500px"></div>
+    <p id="data"></p>
+</body>
+<script>
+    $(function () {
+    $('#container').highcharts({
+        title: {
+            zoomType: 'xy'
+        },
+        xAxis: {
+            title: {
+                text: '图片所在页数'
+            },
+            tickInterval: 1
+        },
+        yAxis:[{
+                title: {
+                    text: '点击概率'
+                }
+            }],
+        tooltip: {
+            formatter: function () {
+                return '第 <b>' + this.point.x + '</b> 页<br> 概率: <b>' + this.point.y + '</b><br> 小时: ' +
+                        this.point.z;
+          }
+        },
+        series: [{'data': [{'y': 0.019, 'x': 58, 'z': '13_14_16_19_20_21_22_23'}, {'y': 0.006, 'x': 49, 'z': '23'}, {'y': 0.023, 'x': 20, 'z': '21'}, {'y': 0.025, 'x': 19, 'z': '23'}, {'y': 0.052, 'x': 18, 'z': '14_15_16_17_18'}, {'y': 0.026, 'x': 17, 'z': '22'}, {'y': 0.038, 'x': 16, 'z': '20'}, {'y': 0.063, 'x': 2, 'z': '04_05'}], 'name': 215324161}, {'data': [{'y': 0.036, 'x': 60, 'z': '13_14_16_19_20_21_22_23'}, {'y': 0.041, 'x': 49, 'z': '10_11'}, {'y': 0.038, 'x': 43, 'z': '12_13'}, {'y': 0.056, 'x': 38, 'z': '11'}, {'y': 0.065, 'x': 33, 'z': '14_16_17_18_19'}, {'y': 0.067, 'x': 29, 'z': '17_18'}, {'y': 0.018, 'x': 27, 'z': '21'}, {'y': 0.038, 'x': 16, 'z': '12'}, {'y': 0.079, 'x': 10, 'z': '07'}], 'name': 199936513}, {'data': [{'y': 0.022, 'x': 56, 'z': '17_18'}, {'y': 0.013, 'x': 31, 'z': '14'}, {'y': 0.035, 'x': 29, 'z': '14_15_16'}, {'y': 0.027, 'x': 27, 'z': '12_13'}, {'y': 0.031, 'x': 26, 'z': '20_21_22_23_00_01_02'}, {'y': 0.056, 'x': 13, 'z': '10_11'}, {'y': 0.025, 'x': 8, 'z': '10_11_12'}, {'y': 0.038, 'x': 5, 'z': '00_01'}], 'name': 171338497}]
+});
+});
+  </script>
+</html>

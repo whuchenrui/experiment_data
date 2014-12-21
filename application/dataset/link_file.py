@@ -30,6 +30,7 @@ def link(_time1, _time2):
     cf.read('..\\config\\data.conf')
     data_path = cf.get('file', 'path')
     source_path = cf.get('dataset', 'path')
+    long_percent = float(cf.get('percent', 'long_percent'))
     fout_pic = codecs.open(source_path+'pic_raw', 'a', encoding='UTF-8')
     fout_result = codecs.open(source_path+'result_raw', 'a', encoding='UTF-8')
     count = 0
@@ -83,7 +84,7 @@ def link(_time1, _time2):
     fout_pic.close()
     fout_result.close()
 
-    percent_ninety_five = int(count*0.95)  # 过滤序列过长的用户，过滤这5%的人
+    percent_ninety_five = int(count*long_percent)  # 过滤序列过长的用户，过滤这3%的人
     request_num = len(dict_distribution)
     temp = 0
     for i in range(1, request_num+1):

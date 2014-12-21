@@ -1,6 +1,7 @@
 # coding=utf-8
 __author__ = 'CRay'
 from application.dataset.link_file import *
+from application.dataset.link_file_hour_pb import *
 from application.dataset.sub_seq import *
 from application.pic_click.average_click_user_distribution import *
 from application.pic_click.picture_quality import *
@@ -52,9 +53,10 @@ def turn(_action):
 if __name__ == '__main__':
     # TODO:修改view的时候，一定要顺带修改data.conf 中的type为相应值！！！！
     act_type = 'view'
-    filter_request = link_files()
+    link_hour('2014-10-26', '2014-10-31', 25, 5)
+    # filter_request = link_files()
     # filter_request = 28
-    main_filter_data(filter_request, act_type)
+    # main_filter_data(filter_request, act_type)
     # pic_click(filter_request, act_type)
     # turn(action)
     # turn_probability(act_type, 2, 15, 20, 2, 0)
