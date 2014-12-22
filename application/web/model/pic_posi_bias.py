@@ -29,7 +29,6 @@ class PositionBias(object):
             dict_output[picture] = temp
         fin.close()
         list_data = PositionBias.print_data(dict_output)
-        print list_data
         return list_data
 
     @staticmethod

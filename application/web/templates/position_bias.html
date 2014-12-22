@@ -6,41 +6,17 @@
   <script type="text/javascript" src="../static/js/function.js"></script>
   <script type="text/javascript" src="../static/js/highcharts.js"></script>
   <script type="text/javascript" src="../static/js/exporting.js"></script>
+  <link rel="stylesheet" type="text/css" href="../static/css/index.css">
 </head>
 <body>
     <div id="container" style="min-width:700px;height:500px"></div>
-    <p id="data" style="display: none">{{entity.data}}</p>
+    <br>
+    <div id="rule" align = 'center' >
+        <label>最少出现次数: </label><input type="text" name="min_show" id="min_show"><br>
+        <br>
+        <label>最少点的个数: </label><input type="text" name="min_page" id="min_page"><br>
+        <br>
+        <input type="submit" value="确定" class="btn btn-primary" onclick="get_data()">
+    </div>
 </body>
-<script>
-    var dataset = $('#data').text();
-    dataset = eval(dataset);
-    alert(dataset);
-    $(function () {
-    $('#container').highcharts({
-        title: {
-            text: 'position-bias图',
-            x: -20 //center
-        },
-        xAxis: {
-            title: {
-                text: '图片所在页数'
-            },
-            tickInterval: 1
-        },
-        yAxis:[{
-                title: {
-                    text: '点击概率'
-                }
-            }],
-        tooltip: {
-            formatter: function () {
-                return '第 <b>' + this.point.x + '</b> 页<br> 概率: <b>' + this.point.y + '</b><br> 小时: ' +
-                        this.point.z;
-          }
-        },
-        series: dataset
-    });
-});
-
-  </script>
 </html>
