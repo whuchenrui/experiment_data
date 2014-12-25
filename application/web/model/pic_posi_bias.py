@@ -4,6 +4,7 @@ __author__ = 'CRay'
 import codecs
 import operator
 from random import choice
+from ConfigParser import ConfigParser
 
 
 class PositionBias(object):
@@ -15,9 +16,12 @@ class PositionBias(object):
 
     @staticmethod
     def filter_data(min_show, min_page, max_pic_num):
+        cf = ConfigParser()
+        cf.read('../../config/data.conf')
+        file_path = cf.get('ray', 'path')
         dict_output = {}
         limit_pic = set()
-        fin = codecs.open('D:/python/project/highcharts/data/dataset/pic_position_hour', 'r', encoding='utf-8')
+        fin = codecs.open(file_path, 'r', encoding='utf-8')
         dict_raw = eval(fin.readline())
         for picture in dict_raw:
             count = 0
