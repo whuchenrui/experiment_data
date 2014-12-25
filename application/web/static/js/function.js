@@ -5,6 +5,7 @@
 function get_data() {
     var min_show = $('#min_show').val();
     var min_page = $('#min_page').val();
+    var max_pic_num = $('#max_pic_num').val();
     $.ajax({
         type: 'post',
         dataType: 'json',
@@ -12,7 +13,8 @@ function get_data() {
         url: '/pb',
         data: {
             'min_show': min_show,
-            'min_page': min_page
+            'min_page': min_page,
+            'max_pic_num': max_pic_num
         },
         success: function(result){
             paint(result);
