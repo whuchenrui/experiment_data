@@ -1,20 +1,22 @@
 #coding:utf-8
 __author__ = 'CRay'
 
-from ConfigParser import ConfigParser
 import codecs
 import operator
+from random import choice
 
 
 class PositionBias(object):
-    def __init__(self, min_show, min_page):
+    def __init__(self, min_show, min_page, max_pic_num):
         self.min_show = min_show
         self.min_page = min_page
-        self.data = PositionBias.filter_data(self.min_show, self.min_page)
+        self.max_pic_num = max_pic_num
+        self.data = PositionBias.filter_data(self.min_show, self.min_page, self.max_pic_num)
 
     @staticmethod
-    def filter_data(min_show, min_page):
+    def filter_data(min_show, min_page, max_pic_num):
         dict_output = {}
+        limit_pic = set()
         fin = codecs.open('D:/python/project/highcharts/data/dataset/pic_position_hour', 'r', encoding='utf-8')
         dict_raw = eval(fin.readline())
         for picture in dict_raw:
@@ -28,13 +30,16 @@ class PositionBias(object):
                 continue
             dict_output[picture] = temp
         fin.close()
-        list_data = PositionBias.print_data(dict_output)
+        while len(limit_pic) < max_pic_num:
+            random_pic = choice(dict_output.keys())
+            limit_pic.add(random_pic)
+        list_data = PositionBias.print_data(dict_output, limit_pic)
         return list_data
 
     @staticmethod
-    def print_data(result):
+    def print_data(result, max_pic_num):
         list_output = []
-        for picture in result:
+        for picture in max_pic_num:
             dict_per_pic = {}
             temp = result[picture]
             sorted_tuple = sorted(temp.items(), key=lambda d: d[0], reverse=True)
@@ -54,5 +59,5 @@ class PositionBias(object):
         return list_output
 
     @staticmethod
-    def get_pic_pb(min_show, min_page):
-        return PositionBias(min_show, min_page)
+    def get_pic_pb(min_show, min_page, max_pic_num):
+        return PositionBias(min_show, min_page, max_pic_num)
