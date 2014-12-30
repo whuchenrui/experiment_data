@@ -5,7 +5,7 @@ import codecs
 from ConfigParser import ConfigParser
 
 
-def position_bais(filter_req, _type):
+def position_bias(filter_req, _type):
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     source_path = cf.get('dataset', 'path')
@@ -27,7 +27,7 @@ def position_bais(filter_req, _type):
         length = len(result)
         requests = length/36
         if requests > filter_req:
-            continue
+            requests = filter_req
         for index, item in enumerate(result):
             result[index] = int(item)
         for i in range(1, 5):           # 统计前四页的呈现点击情况
