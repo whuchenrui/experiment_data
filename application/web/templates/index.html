@@ -6,9 +6,19 @@
   <script type="text/javascript" src="../static/js/function.js"></script>
   <script type="text/javascript" src="../static/js/highcharts.js"></script>
   <script type="text/javascript" src="../static/js/exporting.js"></script>
+  <link rel="stylesheet" type="text/css" href="../static/css/index.css">
 </head>
 <body>
-
+    <div id="container" style="min-width:700px;height:500px"></div>
     <br>
+    <div id="rule" align = 'center' >
+        <label>最少出现次数: </label><input type="text" name="min_show" id="min_show"><br>
+        <br>
+        <label>最少点的个数: </label><input type="text" name="min_page" id="min_page"><br>
+        <br>
+        <label>显示折线条数: </label><input type="text" name="max_pic_num" id="max_pic_num"><br>
+        <br>
+        <input type="submit" value="确定" class="btn btn-primary" onclick="get_pb_data()">
+    </div>
 </body>
 </html>
