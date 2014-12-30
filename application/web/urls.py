@@ -2,9 +2,9 @@
 __author__ = 'CRay'
 
 from handlers.pb import MainHandler
-from handlers.pb import ResultHandler
+from handlers.pb import PicHourHandler
 
 urls = [
     (r'/pb', MainHandler),
-    (r'/result', ResultHandler),
+    (r'/hour', PicHourHandler),
 ]
