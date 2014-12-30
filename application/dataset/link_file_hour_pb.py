@@ -25,13 +25,40 @@ def get_time_list(_timea, _timeb):
     return list_time
 
 
+dict_pb_hour = {}
+dict_pb_hour_distribution = {}
+
+
+def exec_pb_hour(list_pic, list_result, file_time, length):
+    for j in range(0, length):
+        page = j/9 + 1
+        picture = list_pic[j]
+        if picture not in dict_pb_hour:
+            dict_pb_hour[picture] = {}
+        if page not in dict_pb_hour[picture]:
+            dict_pb_hour[picture][page] = [0, 0, file_time]
+        if file_time not in dict_pb_hour[picture][page][2]:
+            dict_pb_hour[picture][page][2] += ',' + file_time
+        if list_result[j] > 0:
+            dict_pb_hour[picture][page][1] += 1
+        dict_pb_hour[picture][page][0] += 1
+
+
+def exec_pb_hour_distribution(list_result, hour):
+    if hour not in dict_pb_hour_distribution:
+        dict_pb_hour_distribution[hour] = [0, 0]
+    for j in range(0, len(list_result)):
+        if list_result[j] > 0:
+            dict_pb_hour_distribution[hour][1] += 1
+        dict_pb_hour_distribution[hour][0] += 1
+
+
 def link_hour(_time1, _time2, _filter_cnt, _min_page):
     list_time = get_time_list(_time1, _time2)
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     data_path = cf.get('file', 'path')
     source_path = cf.get('dataset', 'path')
-    dict_pb_hour = {}
     _filter_cnt *= 36
 
     for time in list_time:
@@ -39,13 +66,14 @@ def link_hour(_time1, _time2, _filter_cnt, _min_page):
         if os.path.exists(current_path):
             for i in range(0, 24):
                 file_path = current_path + '\\'
-                temp_name = ''
+                hour = ''
                 if i < 10:
-                    temp_name = '0'
-                pic_name = file_path+'pic_'+temp_name+str(i)
-                result_name = file_path+'result_'+temp_name+str(i)
+                    hour = '0'
+                hour += str(i)
+                pic_name = file_path+'pic_' + hour
+                result_name = file_path+'result_' + hour
                 if os.path.exists(pic_name):
-                    file_hour = temp_name + str(i)
+                    file_time = time + ':' + hour
                     fin_pic = codecs.open(pic_name, 'r', encoding='utf-8')
                     fin_result = codecs.open(result_name, 'r', encoding='utf-8')
                     while True:
@@ -60,21 +88,10 @@ def link_hour(_time1, _time2, _filter_cnt, _min_page):
                             length = _filter_cnt
                         for index, item in enumerate(list_result):
                             list_result[index] = int(item)
-                        for j in range(0, length):
-                            page = j/9 + 1
-                            picture = list_pic[j]
-                            if picture not in dict_pb_hour:
-                                dict_pb_hour[picture] = {}
-                            if page not in dict_pb_hour[picture]:
-                                dict_pb_hour[picture][page] = [0, 0, file_hour]
-                            if file_hour != dict_pb_hour[picture][page][2] and \
-                                    len(file_hour) == len(dict_pb_hour[picture][page][2]):
-                                dict_pb_hour[picture][page][2] += '_' + file_hour
-                            elif file_hour not in dict_pb_hour[picture][page][2]:
-                                dict_pb_hour[picture][page][2] += '_' + file_hour
-                            if list_result[j] > 0:
-                                dict_pb_hour[picture][page][1] += 1
-                            dict_pb_hour[picture][page][0] += 1
+                        # exec_pb_hour 统计的是小于filter_cnt次请求的信息
+                        exec_pb_hour(list_pic, list_result, file_time, length)
+                        # exec_pb_hour_distribution统计所有长度的seq
+                        exec_pb_hour_distribution(list_result, hour)
                     fin_pic.close()
                     fin_result.close()
                     print str(i)
@@ -83,10 +100,23 @@ def link_hour(_time1, _time2, _filter_cnt, _min_page):
     for p in dict_pb_hour:
         if len(dict_pb_hour[p]) > _min_page:
             dict_output[p] = dict_pb_hour[p]
-    fout_result = codecs.open(source_path+'pic_position_hour', 'w', encoding='UTF-8')
+    fout_result = open(source_path+'pic_position_hour', 'w')
     fout_result.write(str(dict_output))
     fout_result.close()
 
+    list_output = []
+    for j in range(0, 24):
+        if j < 10:
+            hour = '0' + str(j)
+        else:
+            hour = str(j)
+        if hour not in dict_pb_hour_distribution:
+            continue
+        temp = float(dict_pb_hour_distribution[hour][1])/dict_pb_hour_distribution[hour][0]
+        list_output.append([j, round(temp, 3)])
+    fout_result = open(source_path+'pic_hour_distribution', 'w')
+    fout_result.write(str(list_output))
+    fout_result.close()
 
 # if __name__ == '__main__':
 #     link_hour('2014-10-26', '2014-10-31', 25, 5)
