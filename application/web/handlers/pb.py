@@ -2,7 +2,6 @@
 __author__ = 'CRay'
 
 import tornado.web
-import traceback
 from tornado.escape import json_encode
 from application.web.model.pic_posi_bias import PositionBias
 from application.pic_click.picture_position_bias import *
@@ -13,16 +12,31 @@ class MainHandler(tornado.web.RequestHandler):
         self.render('position_bias.html')
 
     def post(self):
-        min_show = self.get_argument('min_show', 500, strip=True)
-        min_show = int(min_show)
-        min_page = self.get_argument('min_page', 5, strip=True)
-        min_page = int(min_page)
-        max_pic_num = self.get_argument('max_pic_num', 10, strip=True)
-        max_pic_num = int(max_pic_num)
-        entity = PositionBias.get_pic_pb(min_show, min_page, max_pic_num)
-        self.write(json_encode(entity.data))
+        min_show = self.get_argument('min_show', default=500, strip=True)
+        if not min_show:
+            min_show = 500
+        else:
+            min_show = int(min_show)
+        min_page = self.get_argument('min_page', default=8, strip=True)
+        if not min_page:
+            min_page = 8
+        else:
+            min_page = int(min_page)
+        max_pic_num = self.get_argument('max_pic_num', default=10, strip=True)
+        if not max_pic_num:
+            max_pic_num = 10
+        else:
+            max_pic_num = int(max_pic_num)
+        function_type = int(self.get_argument('total', default=0, strip=True))
+        if function_type == 0:
+            entity = PositionBias(min_show, min_page, max_pic_num)
+            data = entity.get_specific_pic()
+        else:
+            data = PositionBias.merge_pics_into_one_line(min_show, min_page)
+        self.write(json_encode(data))
 
 
-class ResultHandler(tornado.web.RequestHandler):
+class PicHourHandler(tornado.web.RequestHandler):
     def post(self):
-        pass
+        data = PositionBias.get_pb_hour()
+        self.write(json_encode(data))
