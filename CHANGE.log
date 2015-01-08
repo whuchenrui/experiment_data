@@ -1,1 +1,5 @@
-1: 代码中有2个TODO处，因为没有过滤数据，所以此处都读取 raw文件，后期需要修改
+version 0.3
+1: 添加新功能: 输入页码和时间, 查询该页上面的9张图片具体信息,在新页面呈现并且显示点击概率
+2: 更正/application/web/model 和 web/handlers 下文件名, 使得更符合规范
+3: 添加redis.conf配置文件
+4: 添加RedisModel类,用于处理redis数据请求, 增强代码可拓展性
