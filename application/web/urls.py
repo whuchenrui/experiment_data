@@ -1,10 +1,12 @@
 # coding: utf-8
 __author__ = 'CRay'
 
-from handlers.pb import MainHandler
-from handlers.pb import PicHourHandler
+from handlers.PosBaisHandler import MainHandler
+from handlers.PosBaisHandler import PicHourHandler
+
 
 urls = [
     (r'/pb', MainHandler),
     (r'/hour', PicHourHandler),
+    (r'/page', PicHourHandler),
 ]
