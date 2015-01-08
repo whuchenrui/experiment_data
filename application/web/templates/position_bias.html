@@ -13,7 +13,7 @@
     <br>
     <table border="1px" class="center">
         <tr style="width: 400px" class="center">
-            <td style="width: 50%">
+            <td style="width: 33%">
                 <div id="rule">
                     <br>
                     <label>最少出现次数: </label><input type="text" name="min_show" id="min_show"><br>
@@ -26,14 +26,25 @@
                     <input type="submit" value="多条线汇总" class="btn-left btn btn-primary " onclick="get_pb_data_total()">
                 </div>
             </td>
-            <td style="width: 50%">
+            <td style="width: 33%">
                 <div>
-                    <label> 显示每小时点击概率分布: </label>
-                    <input type="submit" value="distribution" class="btn btn-primary" onclick="get_pb_hour_data()">
+                    <label> 显示每小时点击概率分布: </label><br><br>
+                    <input type="submit" value="distribution" class="btn-left btn btn-primary" onclick="get_pb_hour_data()">
                 </div>
+            </td>
+            <td style="width: 33%">
+                <form action="page" method="post">
+                    <br>
+                    <label>页码:</label> <input type="text" name="page_num"><br>
+                    <br>
+                    <label>日期:</label> <input type="text" name="date" placeholder="2014-11-11"><br>
+                    <br>
+                    <label>时刻:</label> <input type="text" name="time" placeholder="12:01:02"><br>
+                    <br>
+                    <input type="submit" value="确定" class="btn-left btn btn-primary">
+                </form>
             </td>
         </tr>
     </table>
-
 </body>
 </html>
