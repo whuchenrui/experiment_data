@@ -10,7 +10,7 @@ from application.web.model.PosBaisModel import PositionBias
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('four.html')
+        self.render('position_bias.html')
 
     def post(self):
         min_show = self.get_argument('min_show', default=500, strip=True)

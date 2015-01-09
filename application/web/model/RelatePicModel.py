@@ -45,6 +45,7 @@ class RelatePicModel():
                     pic_url = json_data[0]['thumb_path']
                     dict_pic_url[pic] = pic_url
                 except:
+                    print traceback.format_exc()
                     print '缺少thumb_path字段信息'
             else:
                 print '查找不到该图片'
@@ -56,7 +57,7 @@ class RelatePicModel():
         :return: 返回page页上的9张图片的点击概率
         """
         cf = ConfigParser.ConfigParser()
-        cf.read('../../../config/data.conf')
+        cf.read('../../config/data.conf')
         path = cf.get('ray', 'path')
         fin = open(path+'pic_position_hour', 'r')
         line = fin.read()

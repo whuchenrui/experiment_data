@@ -14,6 +14,7 @@ class RelatePicHandler(tornado.web.RequestHandler):
         page = int(page)
         date = self.get_argument('date', default='2014-11-11', strip=True)
         time = self.get_argument('time', default='11:11:11', strip=True)
+        time += ':00:00'
         temp_date_time = date + ' ' + time  # '2014-11-11 11:11:11'
         east_time = datetime.strptime(temp_date_time, '%Y-%m-%d %H:%M:%S')
         west_time = east_time - timedelta(hours=14)
@@ -25,7 +26,7 @@ class RelatePicHandler(tornado.web.RequestHandler):
         if result:
             dict_pic_url = relate_pic_model.get_pic_url()
             dict_pic_probability = relate_pic_model.get_pic_probability()
-            str_result = '<table><tr>'
+            str_result = '<table border="1"><tr>'
             temp_list = []
             for pic in dict_pic_url:
                 str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"></td>'

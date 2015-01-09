@@ -10,7 +10,7 @@ class RedisModel():
 
     def __init__(self, db_name):
         cf = ConfigParser.ConfigParser()
-        cf.read('../../../config/redis.conf')
+        cf.read('../../config/redis.conf')
         redis_host = cf.get(db_name, 'host')
         redis_port = cf.get(db_name, 'port')
         redis_db = cf.get(db_name, 'db')
@@ -31,6 +31,6 @@ class RedisModel():
             list_pic_ranking = str_pic_ranking.strip('[]').split(',')
             for i in range(0, len(list_pic_ranking)):
                 list_pic_ranking[i] = list_pic_ranking[i].strip(' ')
-            return str_pic_ranking
+            return list_pic_ranking
         else:
             return ''
