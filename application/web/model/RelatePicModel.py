@@ -46,9 +46,9 @@ class RelatePicModel():
                     dict_pic_url[pic] = pic_url
                 except:
                     print traceback.format_exc()
-                    print '缺少thumb_path字段信息'
+                    print '缺少thumb_path字段信息, id = '+ pic
             else:
-                print '查找不到该图片'
+                print '查找不到该图片, id = '+ pic
             appwill.close()
         return dict_pic_url
 
