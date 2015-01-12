@@ -66,14 +66,6 @@ class PositionBias(object):
         return list_output
 
     @staticmethod
-    def get_pb_hour():
-        file_path = PositionBias.get_file_path('pic_hour_distribution')
-        fin = open(file_path, 'r')
-        list_raw = eval(fin.readline())
-        fin.close()
-        return list_raw
-
-    @staticmethod
     def merge_pics_into_one_line(min_show, min_page):
         file_path = PositionBias.get_file_path('pic_position_hour')
         dict_output = {}
