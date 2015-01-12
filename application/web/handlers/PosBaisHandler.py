@@ -35,9 +35,3 @@ class MainHandler(tornado.web.RequestHandler):
         else:
             data = PositionBias.merge_pics_into_one_line(min_show, min_page)
         self.write(json_encode(data))
-
-
-class PicHourHandler(tornado.web.RequestHandler):
-    def post(self):
-        data = PositionBias.get_pb_hour()
-        self.write(json_encode(data))
