@@ -3,14 +3,39 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css">
+    <style type="text/css">
+        .pic{
+            max-width: 110px;
+            maxheight: 65px;
+        }
+    </style>
 </head>
 <body>
-    <table border="1">
-        <tr>
-            {% for pic in range(0, 3) %}
-                <td> {{dict_pic[list_pic[pic]]}} </td>
-            {% end %}
-        </tr>
-    </table>
+    <div>
+        <button value="submit" class="btn-left btn btn-primary"><</button>
+    </div>
+    <div>
+        <table border="1">
+            <tr>
+                {% for pic in range(0, 3) %}
+                    <td> <img class="pic" src={{dict_pic[list_pic[pic]]}}></td>
+                {% end %}
+            </tr>
+            <tr>
+                {% for pic in range(3, 6) %}
+                    <td> <img class="pic" src={{dict_pic[list_pic[pic]]}}></td>
+                {% end %}
+            </tr>
+            <tr>
+                {% for pic in range(6, 9) %}
+                    <td> <img class="pic" src={{dict_pic[list_pic[pic]]}}></td>
+                {% end %}
+            </tr>
+        </table>
+    </div>
+    <div>
+        <button value="submit" class="btn-left btn btn-primary" onclick="next_page()">></button>
+    </div>
 </body>
 </html>

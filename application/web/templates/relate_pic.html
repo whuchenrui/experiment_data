@@ -2,44 +2,29 @@
 <html lang="en">
 <meta charset="UTF-8">
 <head>
-    <style type="text/css">
-        .pic{
-            width: 100px;
-            height: 70px;
-        }
-        .pic_data{
-            width: 50px;
-            height: 40px;
-        }
-        #main_div{
-            width: 600px;
-            height: auto;
-            margin-left: 16%;
-        }
-        #data_div{
-            width: 200px;
-            height: auto;
-            margin-left: 100px;
-            float:left;
-        }
-    </style>
+    <script type="text/javascript" src="../static/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/function.js"></script>
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css">
 </head>
 <body>
+    <div>
+        <button value="submit" class="btn-left btn btn-primary" onclick="previous_page()"><</button>
+    </div>
     <div id="main_div">
         <table border="1">
             <tr>
                 {% for i in range(0, 3) %}
-                    <td class="pic"><img src={{dict_url[list_pic[i]]}}></td>
+                    <td><img class="pic" src={{dict_url[list_pic[i]]}}></td>
                 {% end %}
             </tr>
             <tr>
                 {% for i in range(3, 6) %}
-                    <td class="pic"><img src={{dict_url[list_pic[i]]}}></td>
+                    <td><img class="pic" src={{dict_url[list_pic[i]]}}></td>
                 {% end %}
             </tr>
             <tr>
                 {% for i in range(6, 9) %}
-                    <td class="pic"><img src={{dict_url[list_pic[i]]}}></td>
+                    <td><img class="pic" src={{dict_url[list_pic[i]]}}></td>
                 {% end %}
             </tr>
         </table>
@@ -75,5 +60,9 @@
             </tr>
         </table>
     </div>
+    <div>
+        <button value="submit" class="btn-left btn btn-primary" onclick="next_page()">></button>
+    </div>
+    <div id="user_parameter" style="display: none">{{str_parameter}}</div>
 </body>
 </html>

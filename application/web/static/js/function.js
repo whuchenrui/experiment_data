@@ -111,3 +111,53 @@ function paint_pb_normal(result){
         }]
     });
 }
+
+function next_page(){
+    var str_parameter = $('#user_parameter').val();
+    var list_parameter = str_parameter.split('=');
+    var page = parseInt(list_parameter[0]);
+    page++;
+    var date = list_parameter[1];
+    var hour = list_parameter[2];
+    $.ajax({
+        type: 'post',
+        dataType: 'json',
+        async: true,
+        url: '/page',
+        data: {
+            'page_num': page,
+            'date': date,
+            'hour': hour
+        },
+        success: function(result){
+            alert('ok');
+        }
+    });
+}
+
+function previous_page(){
+    var str_parameter = $('#user_parameter').val();
+    var list_parameter = str_parameter.split('=');
+    var page = parseInt(list_parameter[0]);
+    if (page > 1){
+        page--;
+        var date = list_parameter[1];
+        var hour = list_parameter[2];
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            async: true,
+            url: '/page',
+            data: {
+                'page_num': page,
+                'date': date,
+                'hour': hour
+            },
+            success: function(result){
+                alert('ok');
+            }
+        });
+    }else{
+        alert('已经是第一页!');
+    }
+}

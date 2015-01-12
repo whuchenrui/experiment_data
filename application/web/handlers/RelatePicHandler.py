@@ -27,8 +27,9 @@ class RelatePicHandler(tornado.web.RequestHandler):
             dict_pic_url = relate_pic_model.get_pic_url()
             dict_pic_probability = relate_pic_model.get_pic_probability()
             list_relate_pic = relate_pic_model.get_relate_pic_list()
+            str_parameter = str(page) + '=' + date + '=' + hour  # 把用户之前的参数保留, 用于查询上下页
             self.render('relate_pic.html', dict_url=dict_pic_url, dict_prob=dict_pic_probability
-                , list_pic=list_relate_pic)
+                , list_pic=list_relate_pic, parameter=str_parameter)
         else:
             error_message = '查询第 '+str(page)+' 页的图片失败!'
             self.render('error.html', result=error_message)
