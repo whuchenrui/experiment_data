@@ -27,26 +27,8 @@ class RelatePicHandler(tornado.web.RequestHandler):
             dict_pic_url = relate_pic_model.get_pic_url()
             dict_pic_probability = relate_pic_model.get_pic_probability()
             list_relate_pic = relate_pic_model.get_relate_pic_list()
-            str_result = '<table border="1"><tr>'
-            for i in range(0, 3):
-                pic = list_relate_pic[i]
-                str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"><br>'
-                str_result += '<p>'+str(dict_pic_probability[pic])+'</p>'
-                str_result += '<p>'+pic+'</p></td>'
-            str_result += '</tr><tr>'
-            for i in range(3, 6):
-                pic = list_relate_pic[i]
-                str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"><br>'
-                str_result += '<p>'+str(dict_pic_probability[pic])+'</p>'
-                str_result += '<p>'+pic+'</p></td>'
-            str_result += '</tr><tr>'
-            for i in range(6, 9):
-                pic = list_relate_pic[i]
-                str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"><br>'
-                str_result += '<p>'+str(dict_pic_probability[pic])+'</p>'
-                str_result += '<p>'+pic+'</p></td>'
-            str_result += '</tr></table>'
-            self.render('relate_pic.html', result=str_result)
+            self.render('relate_pic.html', dict_url=dict_pic_url, dict_prob=dict_pic_probability
+                , list_pic=list_relate_pic)
         else:
-            error_message = '查询第'+str(page)+'页的9张图片失败!'
-            self.render('relate_pic.html', result=error_message)
+            error_message = '查询第 '+str(page)+' 页的图片失败!'
+            self.render('error.html', result=error_message)
