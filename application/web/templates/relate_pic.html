@@ -8,7 +8,7 @@
             height: 70px;
         }
         .pic_data{
-            width: 100px;
+            width: 50px;
             height: 40px;
         }
         #main_div{
@@ -16,9 +16,64 @@
             height: auto;
             margin-left: 16%;
         }
+        #data_div{
+            width: 200px;
+            height: auto;
+            margin-left: 100px;
+            float:left;
+        }
     </style>
 </head>
 <body>
-    <div id="main_div">{% raw result %}</div>
+    <div id="main_div">
+        <table border="1">
+            <tr>
+                {% for i in range(0, 3) %}
+                    <td class="pic"><img src={{dict_url[list_pic[i]]}}></td>
+                {% end %}
+            </tr>
+            <tr>
+                {% for i in range(3, 6) %}
+                    <td class="pic"><img src={{dict_url[list_pic[i]]}}></td>
+                {% end %}
+            </tr>
+            <tr>
+                {% for i in range(6, 9) %}
+                    <td class="pic"><img src={{dict_url[list_pic[i]]}}></td>
+                {% end %}
+            </tr>
+        </table>
+    </div>
+    <div id="data_div">
+        <table border="1">
+            <tr>
+                {% for i in range(0, 3) %}
+                    <td class="pic_data">
+                        {{list_pic[i]}}
+                        <br>
+                        {{dict_prob[list_pic[i]]}}
+                    </td>
+                {% end %}
+            </tr>
+            <tr>
+                {% for i in range(3, 6) %}
+                    <td class="pic_data">
+                        {{list_pic[i]}}
+                        <br>
+                        {{dict_prob[list_pic[i]]}}
+                    </td>
+                {% end %}
+            </tr>
+            <tr>
+                {% for i in range(6, 9) %}
+                    <td class="pic_data">
+                        {{list_pic[i]}}
+                        <br>
+                        {{dict_prob[list_pic[i]]}}
+                    </td>
+                {% end %}
+            </tr>
+        </table>
+    </div>
 </body>
 </html>
