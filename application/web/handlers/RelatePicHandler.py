@@ -13,9 +13,9 @@ class RelatePicHandler(tornado.web.RequestHandler):
         page = self.get_argument('page_num', default=1, strip=True)
         page = int(page)
         date = self.get_argument('date', default='2014-11-11', strip=True)
-        time = self.get_argument('time', default='11:11:11', strip=True)
-        time += ':00:00'
-        temp_date_time = date + ' ' + time  # '2014-11-11 11:11:11'
+        hour = self.get_argument('hour', default='11:11:11', strip=True)
+        hour += ':00:00'
+        temp_date_time = date + ' ' + hour  # '2014-11-11 11:11:11'
         east_time = datetime.strptime(temp_date_time, '%Y-%m-%d %H:%M:%S')
         west_time = east_time - timedelta(hours=14)
         str_west_time = west_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -26,14 +26,25 @@ class RelatePicHandler(tornado.web.RequestHandler):
         if result:
             dict_pic_url = relate_pic_model.get_pic_url()
             dict_pic_probability = relate_pic_model.get_pic_probability()
+            list_relate_pic = relate_pic_model.get_relate_pic_list()
             str_result = '<table border="1"><tr>'
-            temp_list = []
-            for pic in dict_pic_url:
-                str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"></td>'
-                temp_list.append(pic)
+            for i in range(0, 3):
+                pic = list_relate_pic[i]
+                str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"><br>'
+                str_result += '<p>'+str(dict_pic_probability[pic])+'</p>'
+                str_result += '<p>'+pic+'</p></td>'
             str_result += '</tr><tr>'
-            for pic in temp_list:
-                str_result += '<td class="pic_data">'+str(dict_pic_probability[pic])+'</td>'
+            for i in range(3, 6):
+                pic = list_relate_pic[i]
+                str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"><br>'
+                str_result += '<p>'+str(dict_pic_probability[pic])+'</p>'
+                str_result += '<p>'+pic+'</p></td>'
+            str_result += '</tr><tr>'
+            for i in range(6, 9):
+                pic = list_relate_pic[i]
+                str_result += '<td class="pic"><img src="'+dict_pic_url[pic]+'"><br>'
+                str_result += '<p>'+str(dict_pic_probability[pic])+'</p>'
+                str_result += '<p>'+pic+'</p></td>'
             str_result += '</tr></table>'
             self.render('relate_pic.html', result=str_result)
         else:
