@@ -72,22 +72,6 @@ function get_pb_data_total(){
     });
 }
 
-function get_pb_hour_data(){
-    $.ajax({
-        type: 'post',
-        dataType: 'json',
-        async: true,
-        url: '/hour',
-        data: {
-            'test': 'test'
-        },
-        success: function(result){
-//            str_result = JSON.stringify(result);
-            paint_pb_normal(result);
-        }
-    });
-}
-
 
 function paint_pb_normal(result){
     $('#container').highcharts({
@@ -122,7 +106,7 @@ function next_page(){
     $.ajax({
         type: 'post',
         dataType: 'json',
-        async: true,
+        async: false,
         url: '/page',
         data: {
             'page_num': page,
@@ -146,7 +130,7 @@ function previous_page(){
         $.ajax({
             type: 'post',
             dataType: 'json',
-            async: true,
+            async: false,
             url: '/page',
             data: {
                 'page_num': page,

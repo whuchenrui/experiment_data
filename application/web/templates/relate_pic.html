@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../static/css/index.css">
 </head>
 <body>
-    <div>
+    <div id="previous_page">
         <button value="submit" class="btn-left btn btn-primary" onclick="previous_page()"><</button>
     </div>
     <div id="main_div">
@@ -28,6 +28,9 @@
                 {% end %}
             </tr>
         </table>
+    </div>
+    <div id="next_page">
+        <button value="submit" class="btn-left btn btn-primary" onclick="next_page()">></button>
     </div>
     <div id="data_div">
         <table border="1">
@@ -59,9 +62,6 @@
                 {% end %}
             </tr>
         </table>
-    </div>
-    <div>
-        <button value="submit" class="btn-left btn btn-primary" onclick="next_page()">></button>
     </div>
     <div id="user_parameter" style="display: none">{{str_parameter}}</div>
 </body>

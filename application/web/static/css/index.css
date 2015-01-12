@@ -111,21 +111,33 @@ fieldset[disabled] .btn {
 /* for relate_pic.html */
 .pic{
     max-width: 110px;
-    maxheight: 65px;
 }
 .pic_data{
     min-width: 50px;
     min-height: 40px;
 }
 #main_div{
-    width: 600px;
+    width: auto;
     height: auto;
-    margin-left: 16%;
+    margin-left: 8%;
     float:left;
 }
+
 #data_div{
     width: 200px;
     height: auto;
-    margin-left: 100px;
+    margin-left: 80px;
     float:left;
+}
+
+#previous_page{
+    width: 40px;
+    float:left;
+    margin-top: 300px;
+}
+
+#next_page{
+    float:left;
+    width: 40px;
+    margin-top: 300px;
 }
