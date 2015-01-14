@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 class RelatePicHandler(tornado.web.RequestHandler):
     def post(self):
-        page = self.get_argument('page_num', default=1, strip=True)
+        page = self.get_argument('page', default=1, strip=True)
         page = int(page)
         date = self.get_argument('date', default='2014-11-11', strip=True)
         hour = self.get_argument('hour', default='11:11:11', strip=True)
@@ -27,9 +27,8 @@ class RelatePicHandler(tornado.web.RequestHandler):
             dict_pic_url = relate_pic_model.get_pic_url()
             dict_pic_probability = relate_pic_model.get_pic_probability()
             list_relate_pic = relate_pic_model.get_relate_pic_list()
-            str_parameter = str(page) + '=' + date + '=' + hour  # 把用户之前的参数保留, 用于查询上下页
             self.render('relate_pic.html', dict_url=dict_pic_url, dict_prob=dict_pic_probability
-                , list_pic=list_relate_pic, str_parameter=str_parameter)
+                , list_pic=list_relate_pic, page=page, date=date, hour=hour)
         else:
             error_message = '查询第 '+str(page)+' 页的图片失败!'
             self.render('error.html', result=error_message)
