@@ -113,13 +113,13 @@ fieldset[disabled] .btn {
     max-width: 110px;
 }
 .pic_data{
-    min-width: 50px;
-    min-height: 40px;
+    min-width: 60px;
+    min-height: 55px;
 }
 #main_div{
     width: auto;
     height: auto;
-    margin-left: 8%;
+    margin-left: 20px;
     float:left;
 }
 
@@ -127,6 +127,7 @@ fieldset[disabled] .btn {
     width: 200px;
     height: auto;
     margin-left: 80px;
+    margin-top: 200px;
     float:left;
 }
 
@@ -134,10 +135,12 @@ fieldset[disabled] .btn {
     width: 40px;
     float:left;
     margin-top: 300px;
+    margin-left: 20px;
 }
 
 #next_page{
     float:left;
     width: 40px;
     margin-top: 300px;
+    margin-left: 20px;
 }
