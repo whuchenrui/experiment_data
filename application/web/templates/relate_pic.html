@@ -35,6 +35,16 @@
     <div id="data_div">
         <table border="1">
             <tr>
+                <td>页码</td>
+                <td>日期</td>
+                <td>小时</td>
+            </tr>
+            <tr>
+                <td id="page">{{page}}</td>
+                <td id="date">{{date}}</td>
+                <td id="hour">{{hour}}</td>
+            </tr>
+            <tr>
                 {% for i in range(0, 3) %}
                     <td class="pic_data">
                         {{list_pic[i]}}
@@ -63,6 +73,5 @@
             </tr>
         </table>
     </div>
-    <div id="user_parameter" style="display: none">{{str_parameter}}</div>
 </body>
 </html>

@@ -13,7 +13,7 @@
 </head>
 <body>
     <div>
-        <button value="submit" class="btn-left btn btn-primary"><</button>
+        <button value="submit" class="btn-left btn btn-primary" onclick="previous_page()"><</button>
     </div>
     <div>
         <table border="1">
@@ -37,5 +37,19 @@
     <div>
         <button value="submit" class="btn-left btn btn-primary" onclick="next_page()">></button>
     </div>
+    <table>
+        <tr>
+            <td>页码</td>
+            <td>日期</td>
+            <td>小时</td>
+        </tr>
+        <tr>
+            <td id="page">5</td>
+            <td id="date">2014-11-11</td>
+            <td id="hour">12</td>
+        </tr>
+    </table>
 </body>
+<script type="text/javascript" src="../static/js/function.js"></script>
+<script type="text/javascript" src="../static/js/jquery-1.11.1.min.js"></script>
 </html>

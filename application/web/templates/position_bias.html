@@ -27,13 +27,13 @@
                 </div>
             </td>
             <td style="width: 50%">
-                <form action="page" method="post" target="_blank">
+                <form action="page" method="post" target="_blank" onsubmit="return check_validation(this);">
                     <br>
-                    <label>页码:</label> <input type="text" name="page_num"><br>
+                    <label>页码:</label> <input type="text" name="page" id="page"><br>
                     <br>
-                    <label>日期:</label> <input type="text" name="date" placeholder="2014-11-11"><br>
+                    <label>日期:</label> <input type="text" name="date" id="date" placeholder="2014-11-11"><br>
                     <br>
-                    <label>小时:</label> <input type="text" name="hour" placeholder="12"><br>
+                    <label>小时:</label> <input type="text" name="hour" id="hour" placeholder="12"><br>
                     <br>
                     <input type="submit" value="确定" class="btn-left btn btn-primary">
                 </form>
