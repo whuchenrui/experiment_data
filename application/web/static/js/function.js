@@ -97,51 +97,77 @@ function paint_pb_normal(result){
 }
 
 function next_page(){
-    var str_parameter = $('#user_parameter').text();
-    var list_parameter = str_parameter.split('=');
-    var page = parseInt(list_parameter[0]);
+    var page = $('#page').text();
+    var date = $('#date').text();
+    var hour = $('#hour').text();
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "test");
+    form.setAttribute("target", "_blank");
+    page = parseInt(page);
     page++;
-    var date = list_parameter[1];
-    var hour = list_parameter[2];
-    $.ajax({
-        type: 'post',
-        dataType: 'json',
-        async: false,
-        url: '/page',
-        data: {
-            'page_num': page,
-            'date': date,
-            'hour': hour
-        },
-        success: function(result){
-            alert('ok');
-        }
-    });
+    var input_page = document.createElement("input");
+    input_page.setAttribute("name", "page");
+    input_page.setAttribute("value", page);
+    var input_date = document.createElement("input");
+    input_date.setAttribute("name", "date");
+    input_date.setAttribute("value", date);
+    var input_hour = document.createElement("input");
+    input_hour.setAttribute("name", "hour");
+    input_hour.setAttribute("value", hour);
+    form.appendChild(input_page);
+    form.appendChild(input_date);
+    form.appendChild(input_hour);
+    form.submit();
 }
 
 function previous_page(){
-    var str_parameter = $('#user_parameter').text();
-    var list_parameter = str_parameter.split('=');
-    var page = parseInt(list_parameter[0]);
-    if (page > 1){
+    var page = $('#page').text();
+    var date = $('#date').text();
+    var hour = $('#hour').text();
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "test");
+    form.setAttribute("target", "_blank");
+    page = parseInt(page);
+    if (page>1){
         page--;
-        var date = list_parameter[1];
-        var hour = list_parameter[2];
-        $.ajax({
-            type: 'post',
-            dataType: 'json',
-            async: false,
-            url: '/page',
-            data: {
-                'page_num': page,
-                'date': date,
-                'hour': hour
-            },
-            success: function(result){
-                alert('ok');
-            }
-        });
+        var input_page = document.createElement("input");
+        input_page.setAttribute("name", "page");
+        input_page.setAttribute("value", page);
+        var input_date = document.createElement("input");
+        input_date.setAttribute("name", "date");
+        input_date.setAttribute("value", date);
+        var input_hour = document.createElement("input");
+        input_hour.setAttribute("name", "hour");
+        input_hour.setAttribute("value", hour);
+        form.appendChild(input_page);
+        form.appendChild(input_date);
+        form.appendChild(input_hour);
+        form.submit();
     }else{
         alert('已经是第一页!');
     }
+}
+
+
+function check_validation(){
+    var page = $('#page_num').val();
+    var date = $('#date').val();
+    var hour = $('#hour').val();
+    if (!isNaN(page)){
+        var reg = /^\d{2}$/;
+        if ((hour != "") && (date != "")){
+            if ( 0 <= parseInt(hour) && parseInt(hour) < 24 && (reg.test(hour))){
+                return true;
+            }else{
+                alert("小时格式为两位数字，如04 23");
+            }
+        }else{
+            alert("输入不能为空！");
+        }
+    }else{
+        alert("输入页码应该为数字！");
+    }
+    return false;
 }
