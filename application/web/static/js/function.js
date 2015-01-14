@@ -102,7 +102,7 @@ function next_page(){
     var hour = $('#hour').text();
     var form = document.createElement("form");
     form.setAttribute("method", "post");
-    form.setAttribute("action", "test");
+    form.setAttribute("action", "page");
     form.setAttribute("target", "_blank");
     page = parseInt(page);
     page++;
@@ -127,7 +127,7 @@ function previous_page(){
     var hour = $('#hour').text();
     var form = document.createElement("form");
     form.setAttribute("method", "post");
-    form.setAttribute("action", "test");
+    form.setAttribute("action", "page");
     form.setAttribute("target", "_blank");
     page = parseInt(page);
     if (page>1){
@@ -152,7 +152,7 @@ function previous_page(){
 
 
 function check_validation(){
-    var page = $('#page_num').val();
+    var page = $('#page').val();
     var date = $('#date').val();
     var hour = $('#hour').val();
     if (!isNaN(page)){

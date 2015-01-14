@@ -18,7 +18,7 @@ class PositionBias(object):
     def get_file_path(name):
         cf = ConfigParser()
         cf.read('../../config/data.conf')
-        file_path = cf.get('ray', 'path') + name
+        file_path = cf.get('server', 'path') + name
         return file_path
 
     def get_specific_pic(self):

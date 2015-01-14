@@ -13,7 +13,9 @@ class RelatePicHandler(tornado.web.RequestHandler):
         page = self.get_argument('page', default=1, strip=True)
         page = int(page)
         date = self.get_argument('date', default='2014-11-11', strip=True)
+        date_origin = date
         hour = self.get_argument('hour', default='11:11:11', strip=True)
+        hour_origin = hour
         hour += ':00:00'
         temp_date_time = date + ' ' + hour  # '2014-11-11 11:11:11'
         east_time = datetime.strptime(temp_date_time, '%Y-%m-%d %H:%M:%S')
@@ -28,7 +30,8 @@ class RelatePicHandler(tornado.web.RequestHandler):
             dict_pic_probability = relate_pic_model.get_pic_probability()
             list_relate_pic = relate_pic_model.get_relate_pic_list()
             self.render('relate_pic.html', dict_url=dict_pic_url, dict_prob=dict_pic_probability
-                , list_pic=list_relate_pic, page=page, date=date, hour=hour)
+                , list_pic=list_relate_pic, page=page, date=date_origin, hour=hour_origin)
         else:
+            print 'error: ', page, ' ', date_origin, ' ', hour_origin
             error_message = '查询第 '+str(page)+' 页的图片失败!'
             self.render('error.html', result=error_message)
