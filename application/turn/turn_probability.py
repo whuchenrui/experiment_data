@@ -1,6 +1,5 @@
 # coding=utf-8
 __author__ = 'CRay'
-import codecs
 from ConfigParser import ConfigParser
 import traceback
 
@@ -18,16 +17,16 @@ def turn_probability(_type, min_req, max_req, max_click, back_st, back_end):
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     source_path = cf.get('dataset', 'path')
-    chart_data = cf.get('dataset', 'chart')
+    chart_path = cf.get('dataset', 'chart')
     action = int(cf.get('type', 'type'))
 
     #TODO： 此处要修改， else 的默认为 result
     if _type == 'save':
         name = 'result_raw'
     else:
-        name = 'result_raw'
+        name = 'result'
 
-    fin_result = codecs.open(source_path+name, 'r', encoding='UTF-8')
+    fin_result = open(source_path+name, 'r')
     dict_result = {}
     for i in range(min_req, max_req+1):
         dict_result[i] = {}
@@ -44,7 +43,7 @@ def turn_probability(_type, min_req, max_req, max_click, back_st, back_end):
             result[index] = int(item)
         if request > max_req:
             request = max_req+1
-        for req in range(min_req, request):
+        for req in range(min_req, request):   # 这里req<request, 不能等于
             start = (req - back_st) * 36
             end = (req - back_end) * 36
             count = 0
@@ -54,6 +53,8 @@ def turn_probability(_type, min_req, max_req, max_click, back_st, back_end):
             if count not in dict_result[req]:
                 dict_result[req][count] = [0, 0]
             dict_result[req][count][1] += 1
+
+        # 统计序列最后一次操作情况
         if request <= max_req:
             start = (request - back_st) * 36
             end = (request - back_end) * 36
@@ -64,12 +65,11 @@ def turn_probability(_type, min_req, max_req, max_click, back_st, back_end):
             if count not in dict_result[request]:
                 dict_result[request][count] = [0, 0]
             dict_result[request][count][0] += 1
-    print dict_result
     fin_result.close()
-    file_name = 'turn_probability_start_' + str(back_st) + '_end_' + str(back_end) + '.log'
+    file_name = '6-turn-probability-start-' + str(back_st) + '-end-' + str(back_end) + '.result'
 
     # print
-    fout = codecs.open(chart_data+file_name, 'w', encoding='UTF-8')
+    fout = open(chart_path+file_name, 'w')
     for req in dict_result:
         a = []
         for i in range(0, max_click+1):

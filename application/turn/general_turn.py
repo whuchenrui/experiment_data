@@ -1,9 +1,11 @@
 # coding=utf-8
 __author__ = 'CRay'
 
-import codecs
 from ConfigParser import ConfigParser
 
+"""
+统计翻页概率,  继续向后翻看的人/(停在该请求的人 + 继续向后翻看的人)
+"""
 def general_turn(_type):
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
@@ -14,7 +16,7 @@ def general_turn(_type):
     else:
         name = 'result'
 
-    fin_result = codecs.open(source_path+name, 'r', encoding='UTF-8')
+    fin_result = open(source_path+name, 'r')
     dict_result = {'total': 0}  # {1:x, 2:x, 'total': xx}} key: request  value: num,  total:总和
     while True:
         line_result = fin_result.readline()
@@ -43,7 +45,7 @@ def print_result(result):
         temp = float(result['total']-result[i])/result['total']
         output.append([i, round(temp, 3)])
         result['total'] -= result[i]
-    fout = codecs.open(chart_data+'general_turn.log', 'w', encoding='UTF-8')
+    fout = open(chart_data+'5-general-turn.result', 'w')
     output_str = str(output)
     fout.write(output_str)
     fout.close()
