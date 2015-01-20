@@ -15,7 +15,7 @@ def position_bias(filter_req, _type):
         name = 'result_raw'
     else:
         name = 'result'
-    fin_result = codecs.open(source_path+name, 'r', encoding='UTF-8')
+    fin_result = open(source_path+name, 'r')
 
     dict_result = {}  # {1: [show_num, click_num]}  show_num: 当前页码一共展示多少次图片，click_num，一共被点击量
 
@@ -35,7 +35,7 @@ def position_bias(filter_req, _type):
                 dict_result[i] = [0, 0]
             dict_result[i][0] += 9
             for j in range((i-1)*9, i*9):
-                if result[j] > action:
+                if result[j] >= action:
                     dict_result[i][1] += 1
         for i in range(2, requests+1):
             page = i*4 - 3
@@ -43,7 +43,7 @@ def position_bias(filter_req, _type):
                 dict_result[page] = [0, 0]
             dict_result[page][0] += 9
             for j in range((page-1)*9, page*9):
-                if result[j] > action:
+                if result[j] >= action:
                     dict_result[page][1] += 1
     fin_result.close()
     print_result(dict_result)
@@ -57,7 +57,7 @@ def print_result(result):
     b = []  # probability per pic
     for page in result:
         a.append([page, result[page][0]])
-        prob = float(result[page][1])/result[page][0]
+        prob = float(result[page][1])/result[page][0]/9
         temp = round(prob, 4)
         b.append([page, temp])
     aa = []
@@ -65,10 +65,10 @@ def print_result(result):
     a.sort(key=lambda x: x[0])
     for item in a:
         aa.append(item[1])
+    b.sort(key=lambda x: x[0])
     for item in b:
         bb.append(item[1])
-    b.sort(key=lambda x: x[0])
-    fout = codecs.open(chart_data+'position_bais.log', 'w', encoding='utf-8')
+    fout = open(chart_data+'4-position-bias.result', 'w')
     fout.write('column:\n')
     fout.write(str(aa))
     fout.write('\n\nline:\n')

@@ -16,9 +16,9 @@ def average_click(filter_req, _type):
     if _type == 'save':
         name = 'result_raw'
     else:
-        name = 'result_1'
+        name = 'result'
 
-    fin = codecs.open(source_path+name, 'r', encoding='utf-8')
+    fin = open(source_path+name, 'r')
     dict_seq = {}
     for i in range(1, filter_req+1):
         dict_seq[i] = {}
@@ -50,7 +50,7 @@ def print_result(result):
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     chart_data = cf.get('dataset', 'chart')
-    fout = codecs.open(chart_data+'average_click.log', 'w', encoding='utf-8')
+    fout = open(chart_data+'2-ava-click.result', 'w')
     for req in result:
         a = []
         for i in range(1, req+1):
@@ -76,10 +76,10 @@ def distribution(_type):
         name = 'result_raw'
     else:
         # TODO: 依照情况修改这里的result_raw  和 result
-        name = 'result_raw'  # 打开去除了1的子序列的log
+        name = 'result'  # 打开去除了1的子序列的log
     dict_result = {}
     count = 0
-    fin = codecs.open(source_path+name, 'r', encoding='utf-8')
+    fin = open(source_path+name, 'r')
     while True:
         line = fin.readline()
         if not line:
@@ -101,7 +101,7 @@ def print_distribution(result, num):
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     chart_data = cf.get('dataset', 'chart')
-    fout = codecs.open(chart_data+'seq_distribution.log', 'w', encoding='utf-8')
+    fout = open(chart_data+'1-seq-distribution.result', 'w')
     length = len(result)
     ratio = 1.0
     column = []

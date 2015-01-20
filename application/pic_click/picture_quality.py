@@ -19,10 +19,10 @@ def quality(_type):
         name = 'result'
         name2 = 'pic'
 
-    fin_result = codecs.open(source_path+name, 'r', encoding='UTF-8')
-    fin_pic = codecs.open(source_path+name2, 'r', encoding='UTF-8')
+    fin_result = open(source_path+name, 'r')
+    fin_pic = open(source_path+name2, 'r')
 
-    dict_result = {}  # {0:{pic: [1, 2]}}  list值[点击数量, 出现的次数]
+    dict_result = {}  # {0:{pic: [1, 2]}}  list值[出现的次数, 点击数量]
     while True:
         line_result = fin_result.readline()
         line_pic = fin_pic.readline()
@@ -42,9 +42,9 @@ def quality(_type):
                 pic = picture[j]
                 if pic not in dict_result[page]:
                     dict_result[page][pic] = [0, 0]
-                if result[j] > action:
-                    dict_result[page][pic][0] += 1
-                dict_result[page][pic][1] += 1
+                if result[j] >= action:
+                    dict_result[page][pic][1] += 1
+                dict_result[page][pic][0] += 1
     print_result(dict_result)
     fin_result.close()
     fin_pic.close()
@@ -60,17 +60,17 @@ def print_result(result):
         num = len(temp)
         num *= 0.1  # 选取呈现量为前10%的数据
         num = int(num)
-        tuple_sorted = sorted(temp.items(), key=lambda d: d[1][1], reverse=True)
-        # [(1, [1, 4]), (2, [2, 5])]
+        tuple_sorted = sorted(temp.items(), key=lambda d: d[1][0], reverse=True)
+        # [(1, [4, 1]), (2, [5, 2])]
         tuple_sorted = tuple_sorted[0: num]
         for j in range(0, num):
-            if tuple_sorted[j][1][1] < 100:
+            if tuple_sorted[j][1][0] < 100:
                 continue
-            click_cnt = tuple_sorted[j][1][0]
-            show_cnt = tuple_sorted[j][1][1]
+            click_cnt = tuple_sorted[j][1][1]
+            show_cnt = tuple_sorted[j][1][0]
             probability = round(float(click_cnt)/show_cnt, 3)
             output.append([page, probability])
-    fout = codecs.open(chart_data+'pic_position.log', 'w', encoding='UTF-8')
+    fout = open(chart_data+'3-pic-quality.result', 'w')
     output_str = str(output)
     fout.write(output_str)
     fout.close()
