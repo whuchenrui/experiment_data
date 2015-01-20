@@ -2,16 +2,15 @@
 __author__ = 'CRay'
 from application.dataset.link_file import *
 from application.dataset.link_file_hour_pb import *
-from application.dataset.sub_seq import *
+from application.dataset.filter_data import *
 from application.pic_click.average_click_user_distribution import *
 from application.pic_click.picture_quality import *
 from application.pic_click.page_positon_bais import *
-from application.pic_click.picture_position_bias import *
 from application.turn.general_turn import *
 from application.turn.turn_probability import *
 
 
-def link_files():
+def main_link_files():
     """ 整合每小时产生的序列，合并为一个文件，未过滤。返回序列总长度，
     并找出大于K次请求后，只剩5%的用户时候的请求数值，方便下一轮过滤 """
     folder_st = '2014-11-04'
@@ -23,7 +22,7 @@ def link_files():
 
 
 def main_filter_data(_filter_request, _type):
-    """ 扫描结果集合，获得1的子序列使用情况，根据图表，设置过滤条件. 3个过滤条件，均过滤10%。总体过滤<30% """
+    """ 扫描结果集合，获得1的子序列使用情况，根据图表，设置过滤条件. 3个过滤条件，均过滤5%。总体过滤<30% """
     get_view_ratio()
     max_len, max_percent = get_sub_seq()
     # view的时候需要filter， 但是save时候，不需要执行该函数
@@ -35,31 +34,30 @@ def main_filter_data(_filter_request, _type):
         print '删去过长序列后剩余： ' + str(count)
 
 
-def pic_click(_filter_req, _type):
+def main_pic_click(_filter_req, _type):
     """ 画平均点击图和点图 """
-    # distribution(_type)                       # 用户序列分布图
-    # average_click(_filter_req, _action)     # 平均点击图
-    # quality(_action)                        # 点图，证明图片质量差别
-    position_bias(_filter_req, _type)     # page的postion图
-    # get_pic_click(_type, 25, 4)             # 单张图片的position图
-    # find_pic(12, )
+    distribution(_type)                       # 用户序列分布图
+    print 'User distribution finish !'
+    average_click(_filter_req, _type)         # 平均点击图
+    print 'Average click finish ! '
+    quality(_type)                            # 点图，证明图片质量差别
+    print 'Picture quality finish !'
+    position_bias(_filter_req, _type)         # page的postion图
+    print 'Page position bias finish !'
 
 
-def turn(_action):
-    general_turn(_action)
+def main_turn_probability(_action):
+    # general_turn(_action)
+    print 'General turn finish !'
     turn_probability(_action, 2, 15, 20, 2, 0)
+    print 'Turn probability with last 8 pages finish !'
 
 
 if __name__ == '__main__':
     # TODO:修改view的时候，一定要顺带修改data.conf 中的type为相应值！！！！
     act_type = 'view'
-    # link_hour('2014-11-04', '2014-11-23', 25, 8)
-    # filter_request = link_files()
-    # filter_request = 28
-    # main_filter_data(filter_request, act_type)
-    pic_click(29, act_type)
-    # turn(action)
-    # turn_probability(act_type, 4, 15, 20, 4, 3)
-
-    # get_pic_click(act_type, 25, 6)
-    # find_pic(6, 500, 100)
+    # filter_request = main_link_files()
+    # main_filter_data(27, act_type)
+    # main_pic_click(27, act_type)
+    # main_turn_probability(act_type)
+    link_hour('2014-11-03', '2014-11-24', 27, 5)  # 开始日期, 结束日期, 统计27*4页内的信息, 至少出现的页码数
