@@ -45,41 +45,27 @@ def link(_time1, _time2):
                 if i < 10:
                     temp_name = '0'
                 file_pic = file_path+'pic_'+temp_name+str(i)
-                if os.path.exists(file_pic):
-                    fin_pic = codecs.open(file_pic, 'r', encoding='utf-8')
-                    while True:
-                        line = fin_pic.readline()
-                        if not line:
-                            break
-                        # list_line = line.split(' ')  # 如果要先画柱状图，此处的过滤先不处理
-                        # if len(list_line) > 900:
-                        #     continue
-                        fout_pic.write(line)
-                        count += 1
-                    fin_pic.close()
-
-            # link result
-            for i in range(0, 24):
-                file_path = current_path + '\\'
-                temp_name = ''
-                if i < 10:
-                    temp_name = '0'
                 file_result = file_path+'result_'+temp_name+str(i)
-                if os.path.exists(file_result):
-                    fin_result = codecs.open(file_result, 'r', encoding='utf-8')
-                    # fout_result.write('\n')
+                if os.path.exists(file_pic) and os.path.exists(file_result):
+                    fin_pic = open(file_pic, 'r')
+                    fin_result = open(file_result, 'r')
                     while True:
-                        line = fin_result.readline()
-                        if not line:
+                        line_pic = fin_pic.readline()
+                        line_result = fin_result.readline()
+                        if not line_result:
                             break
-                        list_line = line.strip('\n').split(' ')
-                        request = len(list_line)/36
+                        if '1' not in line_result:
+                            if '2' not in line_result:
+                                continue
+                        list_result = line_result.strip('\n').split(' ')
+                        request = len(list_result)/36
                         if request not in dict_distribution:
                             dict_distribution[request] = 0
                         dict_distribution[request] += 1
-                        # if len(list_line) > 900:  # 如果要先画柱状图，此处的过滤先不处理
-                        #     continue
-                        fout_result.write(line)
+                        fout_pic.write(line_pic)
+                        fout_result.write(line_result)
+                        count += 1
+                    fin_pic.close()
                     fin_result.close()
     fout_pic.close()
     fout_result.close()
@@ -94,9 +80,3 @@ def link(_time1, _time2):
             temp = i-1
             break
     return count, temp
-
-
-# if __name__ == '__main__':
-#     folder_st = '2014-10-26'
-#     folder_end = '2014-10-31'
-#     link(folder_st, folder_end)

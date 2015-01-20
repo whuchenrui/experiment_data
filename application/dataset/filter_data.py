@@ -75,7 +75,7 @@ def get_view_ratio():
             temp += percent
         temp_output = round(temp, 3)
         b.append([i, temp_output])
-    fout = codecs.open(chart_data+'view_ratio.log', 'w', encoding='utf-8')
+    fout = open(chart_data+'0-data-view.result', 'w')
     fout.write('column:\n')
     fout.write(str(a))
     fout.write('\n')
@@ -127,7 +127,7 @@ def get_sub_seq():
     a = []   # 当前横坐标对应的seq占所有seq的比例
     b = []   # 小于等于当前坐标对应的seq占所有的比例
     temp = 0
-    rule_length = 0
+    rule_length = 0  # 子序列1的长度大于rule_length会被删除
     for i in range(0, 50):
         if i not in dict_seq:
             a.append([0, 0])
@@ -137,11 +137,10 @@ def get_sub_seq():
             temp += ratio
         temp_output = round(temp, 3)
         b.append([i, temp_output])
-        # TODO: 修改删除条件 原先为0.9
         if temp < sub_seq_length:
             rule_length = i
-    fout = codecs.open(chart_data+'seq_of_1.log', 'w', encoding='utf-8')
-    fout.write('picture 1:\n')
+    fout = open(chart_data+'0-data-sub-seq.result', 'w')
+    fout.write('Data about length of seq 1 (picture 1):\n')
     fout.write('ratio of per length:\n')
     fout.write(str(a))
     fout.write('\n')
@@ -151,7 +150,7 @@ def get_sub_seq():
 
     a = []
     b = []
-    rule_percent = 0
+    rule_percent = 0    # 1占序列比大于rule_percent会被删除
     temp = 0
     for i in range(0, 50):
         if i not in dict_seq_ratio:
@@ -162,10 +161,9 @@ def get_sub_seq():
             temp += ratio
         temp_output = round(temp, 3)
         b.append([i, temp_output])
-        # TODO: 修改删除条件  原先为0.9
         if temp < sub_seq_percent:
             rule_percent = i
-    fout.write('picture 2:\n')
+    fout.write('Data about ratio of sub seq 1 (picture 2):\n')
     fout.write('ratio of this percentage:\n')
     fout.write(str(a))
     fout.write('\n')
@@ -182,7 +180,7 @@ def get_sub_seq():
 def filter_rule(line, action, max_length, percent):
     length = len(line)
     max_len = get_sub_seq_cnt(line, action, length)
-    click_num = get_click_cnt(line, action)
+    # click_num = get_click_cnt(line, action)
     if max_len > max_length:
         return False
     elif int((float(max_len)/length)*100) > percent:
@@ -199,11 +197,11 @@ def filter_data(max_len, max_percent):
     source_path = cf.get('dataset', 'path')
     action = int(cf.get('type', 'type'))
 
-    fin_pic = codecs.open(source_path+'pic_raw', 'r', encoding='utf-8')
-    fin_result = codecs.open(source_path+'result_raw', 'r', encoding='utf-8')
+    fin_pic = open(source_path+'pic_raw', 'r')
+    fin_result = open(source_path+'result_raw', 'r')
 
-    fout_pic = codecs.open(source_path+'pic_1', 'w', encoding='utf-8')
-    fout_result = codecs.open(source_path+'result_1', 'w', encoding='utf-8')
+    fout_pic = open(source_path+'pic_temp', 'w')
+    fout_result = open(source_path+'result_temp', 'w')
 
     # fout_filter_pic = codecs.open(source_path+'pic_filter', 'w', encoding='utf-8')
     # fout_filter_result = codecs.open(source_path+'result_filter', 'w', encoding='utf-8')
@@ -222,15 +220,10 @@ def filter_data(max_len, max_percent):
             count += 1
             fout_pic.write(line_pic)
             fout_result.write(line_result)
-        # else:
-        #     fout_filter_pic.write(line_pic)
-        #     fout_filter_result.write(line_result)
     fin_pic.close()
     fin_result.close()
     fout_pic.close()
     fout_result.close()
-    # fout_filter_pic.close()
-    # fout_filter_result.close()
     return count
 
 
@@ -239,11 +232,11 @@ def remove_too_long_seq(req_num):
     cf.read('..\\config\\data.conf')
     source_path = cf.get('dataset', 'path')
 
-    fin_pic = codecs.open(source_path+'pic_1', 'r', encoding='utf-8')
-    fin_result = codecs.open(source_path+'result_1', 'r', encoding='utf-8')
+    fin_pic = open(source_path+'pic_temp', 'r')
+    fin_result = open(source_path+'result_temp', 'r')
 
-    fout_pic = codecs.open(source_path+'pic', 'w', encoding='utf-8')
-    fout_result = codecs.open(source_path+'result', 'w', encoding='utf-8')
+    fout_pic = open(source_path+'pic', 'w')
+    fout_result = open(source_path+'result', 'w')
 
     count = 0
     while True:

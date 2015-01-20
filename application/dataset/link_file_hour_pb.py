@@ -25,8 +25,8 @@ def get_time_list(_timea, _timeb):
     return list_time
 
 
-dict_pb_hour = {}
-dict_pb_hour_distribution = {}
+dict_pb_hour = {}   # 记录每个图片出现的位置和时间
+dict_pb_hour_distribution = {}    # 记录点击概率与小时的关系
 
 
 def exec_pb_hour(list_pic, list_result, file_time, length):
@@ -86,11 +86,16 @@ def link_hour(_time1, _time2, _filter_cnt, _min_page):
                         length = len(list_result)
                         if length > _filter_cnt:
                             length = _filter_cnt
+                        is_zero_seq = 0
                         for index, item in enumerate(list_result):
                             list_result[index] = int(item)
-                        # exec_pb_hour 统计的是小于filter_cnt次请求的信息
+                            if list_result[index] >= 1:
+                                is_zero_seq += 1
+                        if is_zero_seq == 0:
+                            continue
+                        # exec_pb_hour 统计单张图片出现的页码和点击概率
                         exec_pb_hour(list_pic, list_result, file_time, length)
-                        # exec_pb_hour_distribution统计所有长度的seq
+                        # exec_pb_hour_distribution 统计点击概率与小时的关系
                         exec_pb_hour_distribution(list_result, hour)
                     fin_pic.close()
                     fin_result.close()
