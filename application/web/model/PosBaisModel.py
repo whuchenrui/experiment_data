@@ -22,7 +22,7 @@ class PositionBias(object):
         return file_path
 
     def get_specific_pic(self):
-        file_path = PositionBias.get_file_path('pic_position_hour')
+        file_path = PositionBias.get_file_path('group_pic_position_hour')
         dict_output = {}
         limit_pic = set()
         fin = open(file_path, 'r')
@@ -67,7 +67,7 @@ class PositionBias(object):
 
     @staticmethod
     def merge_pics_into_one_line(min_show, min_page):
-        file_path = PositionBias.get_file_path('pic_position_hour')
+        file_path = PositionBias.get_file_path('group_pic_position_hour')
         dict_output = {}
         fin = open(file_path, 'r')
         dict_raw = eval(fin.readline())
