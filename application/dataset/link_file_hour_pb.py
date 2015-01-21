@@ -28,6 +28,23 @@ def get_time_list(_timea, _timeb):
 dict_pb_hour = {}   # 记录每个图片出现的位置和时间
 dict_pb_hour_distribution = {}    # 记录点击概率与小时的关系
 
+def get_sub_seq_cnt(line, action, length):
+    c_len = 0               # 当前最长1序列长度
+    max_len = 0             # 最大1序列长度
+    for i in range(0, length):
+        if line[i] >= action:
+            if c_len > 0:
+                c_len += 1
+            else:
+                c_len = 1
+        else:
+            if c_len > max_len:
+                max_len = c_len
+            c_len = 0
+    if c_len > max_len:   # 处理最后一个数字为1的情况
+        max_len = c_len
+    return max_len
+
 
 def exec_pb_hour(list_pic, list_result, file_time, length):
     for j in range(0, length):
@@ -53,13 +70,13 @@ def exec_pb_hour_distribution(list_result, hour):
         dict_pb_hour_distribution[hour][0] += 1
 
 
-def link_hour(_time1, _time2, _filter_cnt, _min_page):
-    list_time = get_time_list(_time1, _time2)
+def link_hour(time_st, time_end, min_page_num, max_request_num, max_sub_seq, max_sub_seq_ratio):
+    list_time = get_time_list(time_st, time_end)
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     data_path = cf.get('file', 'path')
     source_path = cf.get('dataset', 'path')
-    _filter_cnt *= 36
+    count = 0
 
     for time in list_time:
         current_path = data_path + time
@@ -84,15 +101,21 @@ def link_hour(_time1, _time2, _filter_cnt, _min_page):
                         list_pic = line_pic.strip('\n').split(' ')
                         list_result = line_result.strip('\n').split(' ')
                         length = len(list_result)
-                        if length > _filter_cnt:
-                            length = _filter_cnt
-                        is_zero_seq = 0
+                        if length > max_request_num * 36:
+                            continue
+                        click_num = 0
                         for index, item in enumerate(list_result):
                             list_result[index] = int(item)
                             if list_result[index] >= 1:
-                                is_zero_seq += 1
-                        if is_zero_seq == 0:
+                                click_num += 1
+                        if click_num == 0:
                             continue
+                        sub_cnt_each_seq = get_sub_seq_cnt(list_result, 1, length)  # 每条序列, 1= view, length 序列长度
+                        if sub_cnt_each_seq > max_sub_seq:
+                            continue
+                        if (float(sub_cnt_each_seq)/length) > max_sub_seq_ratio:
+                            continue
+                        count += 1
                         # exec_pb_hour 统计单张图片出现的页码和点击概率
                         exec_pb_hour(list_pic, list_result, file_time, length)
                         # exec_pb_hour_distribution 统计点击概率与小时的关系
@@ -101,9 +124,10 @@ def link_hour(_time1, _time2, _filter_cnt, _min_page):
                     fin_result.close()
                     print str(i)
 
+    print '总的序列条数: ', count
     dict_output = {}
     for p in dict_pb_hour:
-        if len(dict_pb_hour[p]) > _min_page:
+        if len(dict_pb_hour[p]) > min_page_num:
             dict_output[p] = dict_pb_hour[p]
     fout_result = open(source_path+'pic_position_hour', 'w')
     fout_result.write(str(dict_output))

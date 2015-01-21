@@ -23,8 +23,26 @@ def get_time_list(_timea, _timeb):
     return list_time
 
 
-def page_click_probability(_time1, _time2, max_request):
-    list_time = get_time_list(_time1, _time2)
+def get_sub_seq_cnt(line, action, length):
+    c_len = 0               # 当前最长1序列长度
+    max_len = 0             # 最大1序列长度
+    for i in range(0, length):
+        if line[i] >= action:
+            if c_len > 0:
+                c_len += 1
+            else:
+                c_len = 1
+        else:
+            if c_len > max_len:
+                max_len = c_len
+            c_len = 0
+    if c_len > max_len:   # 处理最后一个数字为1的情况
+        max_len = c_len
+    return max_len
+
+
+def page_click_probability(time_st, time_end, max_request_num, max_sub_seq, max_sub_seq_ratio):
+    list_time = get_time_list(time_st, time_end)
     cf = ConfigParser()
     cf.read('..\\..\\config\\data.conf')
     data_path = cf.get('file', 'path')
@@ -32,7 +50,7 @@ def page_click_probability(_time1, _time2, max_request):
     chart_path = cf.get('dataset', 'chart')
     dict_page_hour = {}
     dict_page_day = {}
-    max_pic_num = max_request*36
+    max_pic_num = max_request_num*36
 
     for day in list_time:
         current_path = data_path + day
@@ -55,12 +73,24 @@ def page_click_probability(_time1, _time2, max_request):
                         if not line_result:
                             break
                         list_result = line_result.strip('\n').split(' ')
-                        seq_length = len(list_result)
-                        if seq_length > max_pic_num:  # 只统计固定页码内的情况
-                            seq_length = max_pic_num
+                        length = len(list_result)
+                        if length > max_pic_num:  # 只统计固定页码内的情况
+                            length = max_pic_num
+                        click_num = 0
                         for index, item in enumerate(list_result):
                             list_result[index] = int(item)
-                        for page in range(1, (seq_length/9)+1):
+                            if list_result[index] >= 1:
+                                click_num += 1
+                        #### 过滤条件 ####
+                        if click_num == 0:
+                            continue
+                        sub_cnt_each_seq = get_sub_seq_cnt(list_result, 1, length)  # 每条序列, 1= view, length 序列长度
+                        if sub_cnt_each_seq > max_sub_seq:
+                            continue
+                        if (float(sub_cnt_each_seq)/length) > max_sub_seq_ratio:
+                            continue
+                        #### end ####
+                        for page in range(1, (length/9)+1):
                             if page not in dict_page_hour[hour]:
                                 dict_page_hour[hour][page] = [0, 0]
                             if page not in dict_page_day[day]:
@@ -93,7 +123,7 @@ def print_page_hour_and_day():
     fin = open(source_path+'page_hour_raw', 'r')
     dict_raw = eval(fin.read())
     list_output = []
-    fout = open(chart_path+'page_hour_result', 'w')
+    fout = open(chart_path+'7-page_hour_result', 'w')
     for i in range(0, 24):
         list_page_hour = []
         if i < 10:
@@ -116,7 +146,7 @@ def print_page_hour_and_day():
     fin = open(source_path+'page_day_raw', 'r')
     dict_raw = eval(fin.read())
     list_output = []
-    fout = open(chart_path+'page_day_result', 'w')
+    fout = open(chart_path+'8-page_day_result', 'w')
     for i in range(3, 24):
         list_page_day = []
         if i < 10:
@@ -138,5 +168,5 @@ def print_page_hour_and_day():
 
 
 if __name__ == '__main__':
-    # page_click_probability('2014-11-03', '2014-11-23', 25)
+    page_click_probability('2014-11-03', '2014-11-23', 27, 30, 0.22)
     print_page_hour_and_day()
