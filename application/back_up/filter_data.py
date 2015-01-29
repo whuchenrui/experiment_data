@@ -180,10 +180,10 @@ def get_sub_seq():
 def filter_rule(line, action, max_length, percent):
     length = len(line)
     max_len = get_sub_seq_cnt(line, action, length)
-    # click_num = get_click_cnt(line, action)
+    click_num = get_click_cnt(line, action)
     if max_len > max_length:
         return False
-    elif int((float(max_len)/length)*100) > percent:
+    elif int((float(click_num)/length)*100) > percent:
         return False
     # TODO: 暂时注释 click/view<0.01 过滤条件
     # elif (float(click_num)/length) < 0.01:

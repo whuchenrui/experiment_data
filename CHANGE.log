@@ -3,3 +3,8 @@ version 0.3
 2: 更正/application/web/model 和 web/handlers 下文件名, 使得更符合规范
 3: 添加redis.conf配置文件
 4: 添加RedisModel类,用于处理redis数据请求, 增强代码可拓展性
+
+version 0.4
+1: 将多张tag相同的图片聚类为group, 实现group的点击概率与页码的关系查询
+2: 增加zero_distribution.py 查看0序列对数据点击率的影响
+3: 增加page_click_probability.py 查看每页上的点击概率与小时 和 日期的关系
