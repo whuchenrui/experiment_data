@@ -3,29 +3,19 @@ __author__ = 'ray'
 
 import codecs
 import os
+import sys
+sys.path.append(r'../../')
 from ConfigParser import ConfigParser
-from datetime import datetime, timedelta
+from lib import Function
+from lib.Config import Config
 
 
 # 负责连接不同日期下的序列，集合到pic，result两个文件中
 # 参数为起止日期
-def get_time_list(_timea, _timeb):
-    timea = datetime.strptime(_timea, '%Y-%m-%d')
-    timeb = datetime.strptime(_timeb, '%Y-%m-%d')
-    time3 = timea
-    time_len = (timeb - timea).days + 1
-    num = 0
-    list_time = list()
-    while num < time_len:
-        t3 = time3.strftime('%Y-%m-%d')
-        time3 += timedelta(days=1)
-        list_time.append(t3)
-        num += 1
-    return list_time
 
 
 def link(_time1, _time2):
-    list_time = get_time_list(_time1, _time2)
+    list_time = Function.get_time_list(_time1, _time2)
     cf = ConfigParser()
     cf.read('..\\config\\data.conf')
     data_path = cf.get('file', 'path')
