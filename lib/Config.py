@@ -10,7 +10,8 @@ Config() 类用于加载 conf 文件, 输入参数为conf文件名, config文件
 class Config():
     def __init__(self, name):
         self.cf = ConfigParser.ConfigParser()
-        self.cf.read('D:\\python\\project\\highcharts\\config\\' + name)
+        self.file_name = 'D:\\python\\project\\highcharts\\config\\' + name
+        self.cf.read(self.file_name)
 
     def get(self, section, option):
         result = self.cf.get(section, option)
@@ -18,3 +19,6 @@ class Config():
 
     def set(self, section, option, value):
         self.cf.set(section, option, value)
+
+    def write(self):
+        self.cf.write(open(self.file_name, 'w'))
