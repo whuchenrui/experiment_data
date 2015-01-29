@@ -98,7 +98,6 @@ def count_seq_info(st_time, end_time):
             temp = i-1
             break
     cf.set('filter_value', 'max_request_num', str(temp))
-    print temp
     # end
 
     # 找出max_su_seq_length
@@ -111,7 +110,6 @@ def count_seq_info(st_time, end_time):
             temp = i-1
             break
     cf.set('filter_value', 'max_sub_seq_length', str(temp))
-    print temp
     # end
 
     # 找出max_click_percent
@@ -125,7 +123,6 @@ def count_seq_info(st_time, end_time):
             break
     temp = round(float(temp)/100, 2)  # 转换为小数
     cf.set('filter_value', 'max_click_percent', str(temp))
-    print temp
     # end
 
     # 计算出用户每次请求停留时间分布
