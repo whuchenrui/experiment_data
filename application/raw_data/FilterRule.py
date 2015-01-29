@@ -29,7 +29,7 @@ class FilterRule():
         click_num = FilterRule.get_click_cnt(result, self.act_type)
         if click_num == 0:
             return False
-        percent = int(float(click_num)/length*100)
+        percent = float(click_num)/length
         if percent > self.max_click_percent:
             return False
         max_len = FilterRule.get_sub_seq_cnt(result, self.act_type, length)
