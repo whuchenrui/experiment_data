@@ -24,7 +24,7 @@ def position_bias(st_time, end_time, behavior):
     chart_path = cf_data.get('path', 'chart_result')
 
     list_time = Function.get_time_list(st_time, end_time)
-    dict_result = {}
+    dict_result = {}  # {page: [show_num, click_num]}
     for day in list_time:
         input_path = fin_path + day
         if os.path.exists(input_path):
@@ -32,16 +32,16 @@ def position_bias(st_time, end_time, behavior):
                 temp_name = ''
                 if i < 10:
                     temp_name = '0'
-                file_in = input_path + '\\full_' + temp_name + str(i)
-                if os.path.exists(file_in):
-                    fin = open(file_in, 'r')
+                file_in_result = input_path + '\\result_' + temp_name + str(i)
+                if os.path.exists(file_in_result):
+                    fin_result = open(file_in_result, 'r')
                     while True:
-                        line = fin.readline()
-                        if not line:
+                        line_result = fin_result.readline()
+                        if not line_result:
                             break
-                        dict_line = eval(line)
-                        list_result = dict_line['result']
-                        list_pic = dict_line['pic']
+                        list_result = line_result.strip('\n').strip(' ').split(' ')
+                        for index, item in enumerate(list_result):
+                            list_result[index] = int(item)
                         length = len(list_result)
                         request_num = length/36
                         for j in range(1, 5):
@@ -59,7 +59,8 @@ def position_bias(st_time, end_time, behavior):
                             for k in range((page-1)*9, page*9):
                                 if list_result[k] >= 1:
                                     dict_result[page][1] += 1
-                    fin.close()
+                    fin_result.close()
+        print 'page pb: ', day
 
     ## 把dict_result按照格式输出, 画成highcharts图
     a = []  # column
