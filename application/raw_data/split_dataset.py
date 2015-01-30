@@ -28,29 +28,42 @@ def split_dataset(st_time, end_time):
                 temp_name = ''
                 if i < 10:
                     temp_name = '0'
-                file_in = input_path + '\\full_' + temp_name + str(i)
-                if os.path.exists(file_in):
-                    file_view = view_output_path + '\\full_' + temp_name + str(i)
-                    file_save = save_output_path + '\\full_' + temp_name + str(i)
-                    fout_view = open(file_view, 'w')
-                    fout_save = open(file_save, 'w')
+                file_in_pic = input_path + '\\pic_' + temp_name + str(i)
+                file_in_result = input_path + '\\result_' + temp_name + str(i)
+                if os.path.exists(file_in_result):
+                    file_view_pic = view_output_path + '\\pic_' + temp_name + str(i)
+                    file_view_result = view_output_path + '\\result_' + temp_name + str(i)
+                    file_save_pic = save_output_path + '\\pic_' + temp_name + str(i)
+                    file_save_result = save_output_path + '\\result_' + temp_name + str(i)
+                    fout_view_pic = open(file_view_pic, 'w')
+                    fout_view_result = open(file_view_result, 'w')
+                    fout_save_pic = open(file_save_pic, 'w')
+                    fout_save_result = open(file_save_result, 'w')
 
-                    fin = open(file_in, 'r')
+                    fin_pic = open(file_in_pic, 'r')
+                    fin_result = open(file_in_result, 'r')
                     while True:
-                        line = fin.readline()
-                        if not line:
+                        line_pic = fin_pic.readline()
+                        line_result = fin_result.readline()
+                        if not line_result:
                             break
-                        dict_line = eval(line)
-                        list_result = dict_line['result']
+                        list_result = line_result.strip('\n').strip(' ').split(' ')
+                        for index, item in enumerate(list_result):
+                            list_result[index] = int(item)
                         if 2 in list_result:   # 有2的则为save, 没有则全为view
-                            fout_save.write(line)   # 这里直接输出line, 而line中有换行符, 所以这里不用显示输出'\n'
+                            fout_save_pic.write(line_pic)   # 这里直接输出line, 而line中有换行符, 所以这里不用显示输出'\n'
+                            fout_save_result.write(line_result)
                             save_cnt += 1
                         else:
-                            fout_view.write(line)
+                            fout_view_pic.write(line_pic)
+                            fout_view_result.write(line_result)
                             view_cnt += 1
-                    fout_view.close()
-                    fout_save.close()
-                    fin.close()
-        print 'finish ', day
+                    fout_view_pic.close()
+                    fout_view_result.close()
+                    fout_save_pic.close()
+                    fout_save_result.close()
+                    fin_pic.close()
+                    fin_result.close()
+        print 'split ', day
     print 'view: ', str(view_cnt)
     print 'save: ', str(save_cnt)
