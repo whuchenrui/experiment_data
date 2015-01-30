@@ -164,25 +164,36 @@ def filter_data(time_st, time_end):
                     temp_name = '0'
                 file_in = input_path + '\\full_' + temp_name + str(i)
                 if os.path.exists(file_in):
-                    file_out = output_path + '\\full_' + temp_name + str(i)
-                    fout = open(file_out, 'w')
+                    file_pic = output_path + '\\pic_' + temp_name + str(i)
+                    file_result = output_path + '\\result_' + temp_name + str(i)
+                    fout_pic = open(file_pic, 'w')
+                    fout_result = open(file_result, 'w')
 
                     fin = open(file_in, 'r')
                     dict_file = eval(fin.read())
                     for idfa in dict_file:
                         list_pic = dict_file[idfa]['pic']
                         list_result = dict_file[idfa]['result']
+                        length = len(list_result)
                         act_time = dict_file[idfa]['act_time']
                         is_valid = filer_rule.check_each_seq(list_result)
                         if is_valid:
-                            each_line = {'idfa': idfa, 'pic': list_pic, 'result': list_result, 'act_time': act_time}
-                            fout.write(str(each_line))
-                            fout.write('\n')
+                            out_pic = ''
+                            out_result = ''
+                            for j in range(0, length):
+                                out_pic += list_pic[j] + ' '
+                                out_result += str(list_result[j]) + ' '
+                            out_pic.strip(' ')
+                            out_result.strip(' ')
+                            fout_pic.write(out_pic + '\n')
+                            fout_result.write(out_result + '\n')
                             valid_cnt += 1
                         else:
                             invalid += 1
                     fin.close()
-                    fout.close()
+                    fout_pic.close()
+                    fout_result.close()
+        print 'filter ', day
     return valid_cnt
 
 
