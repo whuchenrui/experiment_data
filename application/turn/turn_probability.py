@@ -1,9 +1,11 @@
 # coding=utf-8
 __author__ = 'CRay'
-from ConfigParser import ConfigParser
-import traceback
+import os
+from lib.Config import Config
+from lib import Function
 
-def turn_probability(_type, min_req, max_req, max_click, back_st, back_end):
+
+def turn_probability(st_time, end_time, behavior, min_req, max_req, back_st, back_end, max_click):
     """
     _type: save or view
     min_seq:    用于统计的最短序列
@@ -14,71 +16,77 @@ def turn_probability(_type, min_req, max_req, max_click, back_st, back_end):
     {req1: {0: [a. b], 1: [a, b]}} req1: seq长度，0: 最后K页点击的图片数量 a没向后翻看的人: b:向后翻的人数
     probability = (b)/(a+b)
     """
-    cf = ConfigParser()
-    cf.read('..\\config\\data.conf')
-    source_path = cf.get('dataset', 'path')
-    chart_path = cf.get('dataset', 'chart')
-    action = int(cf.get('type', 'type'))
-
-    #TODO： 此处要修改， else 的默认为 result
-    if _type == 'save':
-        name = 'result_raw'
+    cf_data = Config('data.conf')
+    if 'all' == behavior:
+        fin_path = cf_data.get('path', 'filter_data')
+    elif 'view' == behavior:
+        fin_path = cf_data.get('path', 'view_data')
+    elif 'save' == behavior:
+        fin_path = cf_data.get('path', 'save_data')
     else:
-        name = 'result'
+        return False
+    chart_path = cf_data.get('path', 'chart_result')
 
-    fin_result = open(source_path+name, 'r')
+    list_time = Function.get_time_list(st_time, end_time)
     dict_result = {}
     for i in range(min_req, max_req+1):
         dict_result[i] = {}
-    while True:
-        line = fin_result.readline()
-        if not line:
-            break
-        result = line.strip('\n').split(' ')
-        length = len(result)
-        request = length/36
-        if request < min_req:
-            continue
-        for index, item in enumerate(result):
-            result[index] = int(item)
-        if request > max_req:
-            request = max_req+1
-        for req in range(min_req, request):   # 这里req<request, 不能等于
-            start = (req - back_st) * 36
-            end = (req - back_end) * 36
-            count = 0
-            for i in range(start, end):
-                if result[i] >= action:
-                    count += 1
-            if count not in dict_result[req]:
-                dict_result[req][count] = [0, 0]
-            dict_result[req][count][1] += 1
-
-        # 统计序列最后一次操作情况
-        if request <= max_req:
-            start = (request - back_st) * 36
-            end = (request - back_end) * 36
-            count = 0
-            for i in range(start, end):
-                if result[i] >= action:
-                    count += 1
-            if count not in dict_result[request]:
-                dict_result[request][count] = [0, 0]
-            dict_result[request][count][0] += 1
-    fin_result.close()
-    file_name = '6-turn-probability-start-' + str(back_st) + '-end-' + str(back_end) + '.result'
+    for day in list_time:
+        input_path = fin_path + day
+        if os.path.exists(input_path):
+            for i in range(0, 24):
+                temp_name = ''
+                if i < 10:
+                    temp_name = '0'
+                file_in_result = input_path + '\\result_' + temp_name + str(i)
+                if os.path.exists(file_in_result):
+                    fin_result = open(file_in_result, 'r')
+                    while True:
+                        line_result = fin_result.readline()
+                        if not line_result:
+                            break
+                        list_result = line_result.strip('\n').strip(' ').split(' ')
+                        length = len(list_result)
+                        request_num = length/36
+                        if request_num < min_req:
+                            continue
+                        for index, item in enumerate(list_result):
+                            list_result[index] = int(item)
+                        if request_num > max_req:
+                            request_num = max_req + 1
+                        for req in range(min_req, request_num):  # 这里req<request, 不能等于
+                            start = (req - back_st) * 36
+                            end = (req - back_end) * 36
+                            click_num = 0
+                            for j in range(start, end):
+                                if list_result[j] >= 1:
+                                    click_num += 1
+                            if click_num not in dict_result[req]:
+                                dict_result[req][click_num] = [0, 0]
+                            dict_result[req][click_num][1] += 1
+                        # 统计序列最后一次操作情况
+                        if request_num <= max_req:
+                            start = (request_num - back_st) * 36
+                            end = (request_num - back_end) * 36
+                            click_num = 0
+                            for j in range(start, end):
+                                if list_result[j] >= 1:
+                                    click_num += 1
+                            if click_num not in dict_result[request_num]:
+                                dict_result[request_num][click_num] = [0, 0]
+                            dict_result[request_num][click_num][0] += 1
+                    fin_result.close()
+        print 'turn probability:  ', day
 
     # print
+    file_name = '6-turn-probability-start-' + str(back_st) + '-end-' + str(back_end) + '-' + behavior + '.result'
     fout = open(chart_path+file_name, 'w')
     for req in dict_result:
         a = []
         for i in range(0, max_click+1):
             if i in dict_result[req]:
-                if dict_result[req][i][1] == 0:
-                    a.append([i, 0])
-                else:
-                    temp = float(dict_result[req][i][1])/(dict_result[req][i][1]+dict_result[req][i][0])
-                    a.append([i, round(temp, 3)])
+                temp = float(dict_result[req][i][1])/(dict_result[req][i][1]+dict_result[req][i][0])
+                a.append([i, round(temp, 3)])
             else:
                 print str(i) + 'is not in request: ' + str(req)
         fout.write("{ name: 'request= " + str(req) + "', data: ")
