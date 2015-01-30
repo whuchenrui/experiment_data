@@ -22,17 +22,17 @@ def draw_chart(st_time, end_time, behavior):
     try:
         page_positon_bais.position_bias(st_time, end_time, behavior)         # page的postion图
         print 'Page position bias finish !'
-        turn_probability.turn_probability(behavior, 2, 15, 20, 2, 0)
+        turn_probability.turn_probability(st_time, end_time, behavior, 3, 15, 2, 0, 20)
         print 'Turn probability with last 8 pages finish !'
     except:
         print traceback.format_exc()
 
 
 if __name__ == '__main__':
-    Select_dataset = 'all'  # view 对应 view数据集,  save对应save数据集   all 对应所有数据集
+    Select_dataset = 'save'  # view 对应 view数据集,  save对应save数据集   all 对应所有数据集
     St_time = '2014-11-04'
-    End_time = '2014-11-04'
-    exec_dataset(St_time, End_time)
+    End_time = '2014-12-14'
+    # exec_dataset(St_time, End_time)
     draw_chart(St_time, End_time, Select_dataset)
     # main_filter_data(27, act_type)
     # main_pic_click(27, act_type)
