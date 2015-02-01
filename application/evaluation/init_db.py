@@ -10,6 +10,7 @@ mongodb 中有三张表
 表1: pic_click_info  {'pid': pic,  }
 """
 
+
 def count_pic_info(st_time, end_time, min_show_num):
     cf_data = Config('data.conf')
     filter_data = cf_data.get('path', 'filter_data')
@@ -91,28 +92,39 @@ def init_mongodb_pic_info():
         each_line['pid'] = pic
         for day in dict_raw[pic]:
             each_line[day] = dict_raw[pic][day]
-        cpic_info.insert(each_line)
+        record = cpic_info.find({'pid': pic}, {'_id': 0})
+        if record.count() == 0:
+            cpic_info.insert(each_line)
+        else:
+            print '该图片的信息已存在!'
     fin.close()
     client.close()
 
 
-def store_hour_ranking():
-    pass
-
-
-def test_mongo():
+def init_mongodb_hour_ranking():
+    """
+    该函数只需要初始化数据库一次, 写入到kdd数据库中的 hour_ranking 表
+    """
+    cf_data = Config('data.conf')
+    dataset_path = cf_data.get('path', 'dataset_path')
     client = pymongo.Connection()
     conn = client.kdd
-    cpic_info = conn.pic_click_info
-    # line = {'pid': '12345', '2014-11-04': {'1': [4, 3], '2': [6, 3]}, '2014-11-05': {'3': [7, 3], '5': [6, 3]}}
-    # cpic_info.insert(line)
-
-    line = cpic_info.find({'pid': '12345'}, {'_id': 0})
-    for result in line:
-        print result
-        if '2014-11-05' in result:
-            print 'oh yes!'
+    cranking = conn.hour_ranking
+    fin = open(dataset_path+'hour_ranking', 'r')
+    while True:
+        line = fin.readline()
+        if not line:
+            break
+        ranking_time, ranking = line.strip('\n').split('\t')
+        list_ranking = ranking.strip(' ').split(', ')
+        record = cranking.find({'time': ranking_time}, {'_id': 0})
+        if record.count() == 0:
+            cranking.insert({'time': ranking_time, 'ranking': list_ranking})
+        else:
+            print '该小时的ranking已存在!'
+    fin.close()
     client.close()
 
+
 if __name__ == '__main__':
-    test_mongo()
+    init_mongodb_pic_info()
