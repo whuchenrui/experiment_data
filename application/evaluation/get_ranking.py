@@ -19,7 +19,7 @@ def get_time_list(time_st, time_end):
     return list_time
 
 
-def get_ranking(a, b):
+def get_ranking(a, b, time_difference):
     list_time = get_time_list(a, b)
     cache = redis.Redis(host='localhost', port=6379, db=0)
     fout = open('ranking.txt', 'w')
@@ -31,7 +31,7 @@ def get_ranking(a, b):
             hour += str(i)
             temp = day + '#' + hour
             east_time = datetime.strptime(temp, '%Y-%m-%d#%H')
-            west_time = east_time - timedelta(hours=14)
+            west_time = east_time - timedelta(hours=time_difference)
             west_time = west_time.strftime('%Y-%m-%d#%H')
             redis_key = 'pp_ios7_hd_cn#hot#' + west_time
             try:
@@ -44,7 +44,7 @@ def get_ranking(a, b):
     fout.close()
 
 
-def split_ranking():
+def split_ranking(max_req):
     fin = open('ranking.txt', 'r')
     fout = open('output.txt', 'w')
     while True:
@@ -53,7 +53,7 @@ def split_ranking():
             break
         ranking_time, ranking = line.strip('\n').split('\t')
         list_ranking = ranking.strip('[]').split(', ')
-        valid_ranking = list_ranking[0: 27*36]
+        valid_ranking = list_ranking[0: max_req*36]
         str_ranking = ''
         for pic in valid_ranking:
             str_ranking += pic + ', '
@@ -64,7 +64,8 @@ def split_ranking():
 
 
 if __name__ == '__main__':
-    st = '2014-11-04'
-    et = '2014-12-14'
-    get_ranking(st, et)
-    split_ranking()
+    St = '2014-11-04'
+    Et = '2014-12-14'
+    Time_difference = 14
+    get_ranking(St, Et, Time_difference)
+    split_ranking(27)
