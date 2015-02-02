@@ -123,6 +123,6 @@ def init_mongodb_hour_ranking():
 
 
 if __name__ == '__main__':
-    count_pic_info('2014-11-04', '2014-11-08', 0)
+    count_pic_info('2014-11-04', '2014-12-14', 0)
     init_mongodb_pic_info()
     init_mongodb_hour_ranking()
