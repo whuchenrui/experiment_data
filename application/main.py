@@ -3,8 +3,8 @@ __author__ = 'CRay'
 import traceback
 from application.raw_data import filter_dataset
 from application.raw_data import split_dataset
-from application.pic_click import page_positon_bais
-from application.turn import turn_probability
+from application.draw_charts import page_positon_bais, turn_probability
+from application.evaluation import init_db
 
 
 def exec_dataset(st_time, end_time):
@@ -28,12 +28,17 @@ def draw_chart(st_time, end_time, behavior):
         print traceback.format_exc()
 
 
+def exec_evaluation(st_time, end_time, ):
+    init_db.count_pic_info(st_time, end_time, 50)   # 最后一个删除呈现次数过少的信息
+
+
 if __name__ == '__main__':
     Select_dataset = 'save'  # view 对应 view数据集,  save对应save数据集   all 对应所有数据集
     St_time = '2014-11-04'
     End_time = '2014-12-14'
     # exec_dataset(St_time, End_time)
-    draw_chart(St_time, End_time, Select_dataset)
+    # draw_chart(St_time, End_time, Select_dataset)
+    exec_evaluation(St_time, End_time)
     # main_filter_data(27, act_type)
     # main_pic_click(27, act_type)
     # main_turn_probability(act_type)
