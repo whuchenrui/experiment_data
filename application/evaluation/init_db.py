@@ -1,10 +1,10 @@
 # coding=utf-8
 __author__ = 'CRay'
 
-import pymongo
 import os
 from lib import Function
 from lib.Config import Config
+from lib.Mongo import Mongo
 """
 mongodb 中有三张表
 表1: pic_click_info  {'pid': pic,  }
@@ -82,23 +82,21 @@ def init_mongodb_pic_info():
     """
     cf_data = Config('data.conf')
     dataset_path = cf_data.get('path', 'dataset_path')
-    client = pymongo.Connection()
-    conn = client.kdd
-    cpic_info = conn.pic_click_info
+    mongo = Mongo('kdd', 'pic_click_info')
     fin = open(dataset_path+'pic_info', 'r')
-    dict_raw = eval(fin.read())
+    dict_raw = eval(fin.read())  # 这里耗时最大, 文件16M
     for pic in dict_raw:
         each_line = {}
         each_line['pid'] = pic
         for day in dict_raw[pic]:
             each_line[day] = dict_raw[pic][day]
-        record = cpic_info.find({'pid': pic}, {'_id': 0})
+        record = mongo.collection.find({'pid': pic}, {'_id': 0})
         if record.count() == 0:
-            cpic_info.insert(each_line)
+            mongo.collection.insert(each_line)
         else:
             print '该图片的信息已存在!'
     fin.close()
-    client.close()
+    mongo.close()
 
 
 def init_mongodb_hour_ranking():
@@ -107,9 +105,7 @@ def init_mongodb_hour_ranking():
     """
     cf_data = Config('data.conf')
     dataset_path = cf_data.get('path', 'dataset_path')
-    client = pymongo.Connection()
-    conn = client.kdd
-    cranking = conn.hour_ranking
+    mongo = Mongo('kdd', 'hour_ranking')
     fin = open(dataset_path+'hour_ranking', 'r')
     while True:
         line = fin.readline()
@@ -117,14 +113,16 @@ def init_mongodb_hour_ranking():
             break
         ranking_time, ranking = line.strip('\n').split('\t')
         list_ranking = ranking.strip(' ').split(', ')
-        record = cranking.find({'time': ranking_time}, {'_id': 0})
+        record = mongo.collection.find({'time': ranking_time}, {'_id': 0})
         if record.count() == 0:
-            cranking.insert({'time': ranking_time, 'ranking': list_ranking})
+            mongo.collection.insert({'time': ranking_time, 'ranking': list_ranking})
         else:
             print '该小时的ranking已存在!'
     fin.close()
-    client.close()
+    mongo.close()
 
 
 if __name__ == '__main__':
+    count_pic_info('2014-11-04', '2014-11-08', 0)
     init_mongodb_pic_info()
+    init_mongodb_hour_ranking()
