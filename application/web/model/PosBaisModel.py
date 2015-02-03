@@ -33,16 +33,16 @@ class PositionBias(object):
         group_num = mongo.collection.find().count()
         while len(limit_group) < self.max_pic_num:
             random_group = random.randint(1, group_num)
-            if random_group not in dict_output:
-                dict_output[random_group] = {}
-                record = mongo.collection.find({'gid': random_group}, {'_id': 0})
-                if record.count > 0:
-                    record = record[0]['pinfo']
-                    valid_point_num = 0
-                    for page in record:
-                        if record[page][0] >= self.min_show:
-                            valid_point_num += 1
-                    if valid_point_num >= self.min_page:
+            record = mongo.collection.find({'gid': random_group}, {'_id': 0})
+            if record.count > 0:
+                record = record[0]['pinfo']
+                valid_point_num = 0
+                for page in record:
+                    if record[page][0] >= self.min_show:
+                        valid_point_num += 1
+                if valid_point_num >= self.min_page:
+                    if random_group not in dict_output:
+                        dict_output[random_group] = {}
                         limit_group.add(random_group)
                         for page in record:
                             if page not in dict_output[random_group]:
@@ -50,8 +50,8 @@ class PositionBias(object):
                                     dict_output[random_group][page] = record[page]
                             else:
                                 print 'error: ', '出现相同的page, 数据有误!'
-                else:
-                    print str(random_group), ' 不存在 '
+            else:
+                print str(random_group), ' 不存在 '
         mongo.close()
         list_data = PositionBias.print_pb(dict_output)
         return list_data
@@ -59,21 +59,22 @@ class PositionBias(object):
     @staticmethod
     def print_pb(result):
         list_output = []
-        for picture in result:
+        sorted_result = sorted(result.items(), key=lambda g: g[0])
+        for item in sorted_result:
             dict_per_pic = {}
-            temp = result[picture]
+            temp = item[1]
             sorted_tuple = sorted(temp.items(), key=lambda d: d[0], reverse=True)
             list_temp = []
             for i in range(0, len(sorted_tuple)):
                 pic_temp = {}
-                page = sorted_tuple[i][0]
+                page = int(sorted_tuple[i][0])
                 probability = round(float(sorted_tuple[i][1][1])/sorted_tuple[i][1][0], 3)
                 pic_temp["x"] = page
                 pic_temp["y"] = probability
                 pic_temp["z"] = sorted_tuple[i][1][2]
                 list_temp.append(pic_temp)
             list_temp_sorted = sorted(list_temp, key=operator.itemgetter('x'))
-            dict_per_pic["name"] = int(picture)
+            dict_per_pic["name"] = int(item[0])
             dict_per_pic["data"] = list_temp_sorted
             list_output.append(dict_per_pic)
         return list_output
