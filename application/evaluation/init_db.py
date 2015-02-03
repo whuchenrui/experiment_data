@@ -8,6 +8,7 @@ from lib.Mongo import Mongo
 """
 mongodb 中有三张表
 表1: pic_click_info  {'pid': pic,  }
+注意: 页码(page) 类型是string类型, 在使用字典读取时候需要注意
 """
 
 
@@ -42,7 +43,7 @@ def count_pic_info(st_time, end_time, min_show_num):
                             list_result[index] = int(item)
                         for j in range(0, length):
                             page = j/9 + 1
-                            page = str(page)
+                            page = str(page)   # 注意: 后面使用到的页码都是string类型, 在使用字典的时候尤其注意
                             picture = list_pic[j]
                             if picture not in dict_result:
                                 dict_result[picture] = {}
@@ -122,7 +123,29 @@ def init_mongodb_hour_ranking():
     mongo.close()
 
 
+def init_group_pic_pb():
+    """
+    该函数只需要初始化数据库一次, 写入到kdd数据库中的 group_pic_pb 表, 用于在线的图片组的position bias 查询
+    """
+    cf_data = Config('data.conf')
+    path = cf_data.get('path', 'server_group_pic_data')
+    mongo = Mongo('kdd', 'group_pic_pb')
+    fin = open(path+'/group_pic_position_hour', 'r')
+    while True:
+        line = fin.readline()
+        if not line:
+            break
+        group_id, page_click_info = line.strip('\n').split('\t')
+        record = mongo.collection.find({'gid': group_id}, {'_id': 0})
+        if record.count() == 0:
+            mongo.collection.insert({'gid': group_id, 'pinfo': page_click_info})
+        else:
+            print str(group_id), ' 已存在 '
+    fin.close()
+    mongo.close()
+
+
 if __name__ == '__main__':
-    count_pic_info('2014-11-04', '2014-12-14', 0)
+    count_pic_info('2014-11-04', '2014-12-14', 50)
     init_mongodb_pic_info()
     init_mongodb_hour_ranking()
