@@ -1,10 +1,10 @@
 # coding=utf-8
 __author__ = 'ray'
 
-import codecs
 import os
-from ConfigParser import ConfigParser
 from datetime import datetime, timedelta
+from lib.Config import Config
+from lib import Function
 
 
 # 负责连接不同日期下的序列，制作dict存储图片出现的位置，点击情况并且记录小时信息。
