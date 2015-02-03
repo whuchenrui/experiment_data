@@ -2,10 +2,11 @@
 __author__ = 'CRay'
 
 import operator
+import random
 import sys
 sys.path.append(r'../../')
-from random import choice
 from ConfigParser import ConfigParser
+from lib.Mongo import Mongo
 
 
 class PositionBias(object):
@@ -22,24 +23,36 @@ class PositionBias(object):
         return file_path
 
     def get_specific_pic(self):
-        file_path = PositionBias.get_file_path('group_pic_position_hour')
+        """
+        从mongodb 数据库中读取group_pic 在不同页码上的总体点击信息
+        dict_output:  {group_id: {page: [show, click, time]}}
+        """
         dict_output = {}
-        limit_pic = set()
-        fin = open(file_path, 'r')
-        dict_raw = eval(fin.readline())
-        while len(limit_pic) < self.max_pic_num:
-            random_pic = choice(dict_raw.keys())
-            count = 0
-            temp = {}
-            for page in dict_raw[random_pic]:
-                if dict_raw[random_pic][page][0] > self.min_show:
-                    count += 1
-                    temp[page] = dict_raw[random_pic][page]
-            if count < self.min_page:
-                continue
-            dict_output[random_pic] = temp
-            limit_pic.add(random_pic)
-        fin.close()
+        limit_group = set()
+        mongo = Mongo('kdd', 'group_pic_pb')
+        group_num = mongo.collection.find().count()
+        while len(limit_group) < self.max_pic_num:
+            random_group = random.randint(1, group_num)
+            if random_group not in dict_output:
+                dict_output[random_group] = {}
+                record = mongo.collection.find({'gid': random_group}, {'_id': 0})
+                if record.count > 0:
+                    record = record[0]['pinfo']
+                    valid_point_num = 0
+                    for page in record:
+                        if record[page][0] >= self.min_show:
+                            valid_point_num += 1
+                    if valid_point_num >= self.min_page:
+                        limit_group.add(random_group)
+                        for page in record:
+                            if page not in dict_output[random_group]:
+                                if record[page][0] >= self.min_show:
+                                    dict_output[random_group][page] = record[page]
+                            else:
+                                print 'error: ', '出现相同的page, 数据有误!'
+                else:
+                    print str(random_group), ' 不存在 '
+        mongo.close()
         list_data = PositionBias.print_pb(dict_output)
         return list_data
 
