@@ -4,6 +4,11 @@ from datetime import datetime, timedelta
 
 
 def get_time_list(time_st, time_end):
+    """
+    :param time_st:  开始时间
+    :param time_end: 结束时间
+    :return:    返回时间列表
+    """
     time_st = datetime.strptime(time_st, '%Y-%m-%d')
     time_end = datetime.strptime(time_end, '%Y-%m-%d')
     time3 = time_st
