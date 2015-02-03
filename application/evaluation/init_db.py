@@ -2,6 +2,8 @@
 __author__ = 'CRay'
 
 import os
+import sys
+sys.path.append(r'../../')
 from lib import Function
 from lib.Config import Config
 from lib.Mongo import Mongo
@@ -136,7 +138,8 @@ def init_group_pic_pb():
         if not line:
             break
         group_id, page_click_info = line.strip('\n').split('\t')
-        record = mongo.collection.find({'gid': group_id}, {'_id': 0})
+        record = mongo.collection.find({'gid': int(group_id)}, {'_id': 0})
+        page_click_info = eval(page_click_info)
         if record.count() == 0:
             mongo.collection.insert({'gid': group_id, 'pinfo': page_click_info})
         else:
