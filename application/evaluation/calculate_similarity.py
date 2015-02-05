@@ -97,7 +97,7 @@ def get_test_data_ranking(st_time, end_time, pic_group, target_ranking):
                 temp_rank.append([round(prob, 4), pic])
             else:
                 # 数据库中数据过滤了呈现<50的记录,所以该图片如果几天内没有出现在这一页,那么这一页上的呈现就为0
-                print page, pic, dict_pic_click_info[page][pic]
+                pass
         temp_rank.sort(key=lambda x: x[0], reverse=True)
         for item in temp_rank:
             list_pic.append(item[1])
@@ -111,7 +111,7 @@ def draw_chart(compare_ranking, input_dict):
         second_ranking = input_dict[page]
         similarity = calculate_similarity(compare_ranking, second_ranking)
         result.append([page, similarity])
-        # print str(page), '  ', compare_ranking, second_ranking
+        print str(page), ' ', len(second_ranking)
     print result
     return result
 

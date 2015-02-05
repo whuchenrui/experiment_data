@@ -50,32 +50,60 @@ def data_baseline(st_time, end_time, target_ranking):
     return list_out_click, list_out_prob
 
 
-def data_position_bias(k):
+def data_position_bias(list_full_model):
     """
     k: 表示选择多少图片
     仅考虑position bias效应后的图片排序, 按照图片质量由高到低排序
+    返回拥有共同集合的  pb, full 两个策略的排序, 并且返回图片个数(valid_num)
     """
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
-    fin = open(path+'1107-1111-100-500.txt', 'r')
+    fin = open(path+'1107-1111_500_data2_pb.txt', 'r')
     line = fin.readline()
-    list_pic = line.split(',')
-    list_output = list_pic[0: k]
+    list_pb_pic = line.split(',')
     fin.close()
-    return list_output
+
+    valid_num = 0
+    list_pb_output = []
+    list_full_output = []
+    for pic in list_full_model:
+        if pic in list_pb_pic:
+            index_pb = list_pb_pic.index(pic)
+            list_pb_output.append([index_pb, pic])
+            index_full = list_full_model.index(pic)
+            list_full_output.append([index_full, pic])
+            valid_num += 1
+    list_pb_output.sort(key=lambda x: x[0])
+    pb = []
+    full = []
+    for item in list_pb_output:
+        pb.append(item[1])
+    for item in list_full_output:
+        full.append(item[1])
+    print valid_num
+    return pb, full, valid_num
 
 
-def data_full_model():
+def data_full_model(k):
     """
     考虑position bias效应, 并且考虑joy boredom 因素
     """
-    pass
+    cf_data = Config('data.conf')
+    path = cf_data.get('path', 'dataset_path')
+    data_name = '1107-1111_500_data3_full'
+    fin = open(path+data_name+'.txt', 'r')
+    line = fin.readline()
+    list_pic = line.split(',')
+    print len(list_pic)
+    list_output = list_pic[0: k]
+    fin.close()
+    data_name = data_name.split('_')[1]
+    return list_output, data_name
 
 
 if __name__ == '__main__':
-    St_time = '2014-11-04'
-    End_time = '2014-11-06'
-    Cf_data = Config('data.conf')
-    path = Cf_data.get('path', 'dataset_path')
-    Pic_group_position_bias = data_position_bias(1000)
-    Pic_group_baseline = data_baseline(St_time, End_time, Pic_group_position_bias)
+    # St_time = '2014-11-04'
+    # End_time = '2014-11-06'
+    data3_full_raw = data_full_model(4000)
+    data2_pb, data3_full, pic_num = data_position_bias(data3_full_raw)
+    # Pic_group_baseline = data_baseline(St_time, End_time, data2_pb)
