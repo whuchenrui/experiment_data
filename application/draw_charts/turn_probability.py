@@ -17,12 +17,16 @@ def turn_probability(st_time, end_time, behavior, min_req, max_req, back_st, bac
     probability = (b)/(a+b)
     """
     cf_data = Config('data.conf')
+    fin_path = cf_data.get('path', 'filter_data')
     if 'all' == behavior:
-        fin_path = cf_data.get('path', 'filter_data')
+        act_value = 1
+        # fin_path = cf_data.get('path', 'filter_data')
     elif 'view' == behavior:
-        fin_path = cf_data.get('path', 'view_data')
+        act_value = 1
+        # fin_path = cf_data.get('path', 'view_data')
     elif 'save' == behavior:
-        fin_path = cf_data.get('path', 'save_data')
+        act_value = 2
+        # fin_path = cf_data.get('path', 'save_data')
     else:
         return False
     chart_path = cf_data.get('path', 'chart_result')
@@ -59,7 +63,7 @@ def turn_probability(st_time, end_time, behavior, min_req, max_req, back_st, bac
                             end = (req - back_end) * 36
                             click_num = 0
                             for j in range(start, end):
-                                if list_result[j] >= 1:
+                                if list_result[j] >= act_value:
                                     click_num += 1
                             if click_num not in dict_result[req]:
                                 dict_result[req][click_num] = [0, 0]
@@ -70,7 +74,7 @@ def turn_probability(st_time, end_time, behavior, min_req, max_req, back_st, bac
                             end = (request_num - back_end) * 36
                             click_num = 0
                             for j in range(start, end):
-                                if list_result[j] >= 1:
+                                if list_result[j] >= act_value:
                                     click_num += 1
                             if click_num not in dict_result[request_num]:
                                 dict_result[request_num][click_num] = [0, 0]
@@ -93,3 +97,6 @@ def turn_probability(st_time, end_time, behavior, min_req, max_req, back_st, bac
         fout.write(str(a))
         fout.write('}, \n')
     fout.close()
+
+if __name__ == '__main__':
+    turn_probability('2014-11-04', '2014-12-14', 'all', 2, 12, 2, 0, 18)

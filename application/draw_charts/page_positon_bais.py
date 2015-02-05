@@ -13,12 +13,16 @@ def position_bias(st_time, end_time, behavior):
     dict_result    {1: [show_num, click_num]}  show_num: 当前页码一共展示多少次图片，click_num，一共被点击量
     """
     cf_data = Config('data.conf')
+    fin_path = cf_data.get('path', 'filter_data')
     if 'all' == behavior:
-        fin_path = cf_data.get('path', 'filter_data')
+        act_value = 1
+        # fin_path = cf_data.get('path', 'filter_data')
     elif 'view' == behavior:
-        fin_path = cf_data.get('path', 'view_data')
+        act_value = 1
+        # fin_path = cf_data.get('path', 'view_data')
     elif 'save' == behavior:
-        fin_path = cf_data.get('path', 'save_data')
+        act_value = 2
+        # fin_path = cf_data.get('path', 'save_data')
     else:
         return False
     chart_path = cf_data.get('path', 'chart_result')
@@ -49,7 +53,7 @@ def position_bias(st_time, end_time, behavior):
                                 dict_result[j] = [0, 0]
                             dict_result[j][0] += 9
                             for k in range((j-1)*9, j*9):
-                                if list_result[k] >= 1:   # 这里统计点击情况
+                                if list_result[k] >= act_value:   # 这里统计点击情况
                                     dict_result[j][1] += 1
                         for j in range(2, request_num+1):
                             page = j*4 - 3
@@ -57,7 +61,7 @@ def position_bias(st_time, end_time, behavior):
                                 dict_result[page] = [0, 0]
                             dict_result[page][0] += 9
                             for k in range((page-1)*9, page*9):
-                                if list_result[k] >= 1:
+                                if list_result[k] >= act_value:
                                     dict_result[page][1] += 1
                     fin_result.close()
         print 'page pb: ', day
@@ -78,3 +82,7 @@ def position_bias(st_time, end_time, behavior):
     fout.write('\n\nline:\n')
     fout.write(str(b))
     fout.close()
+
+
+if __name__ == '__main__':
+    position_bias('2014-11-04', '2014-12-14', 'save')
