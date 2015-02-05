@@ -1,78 +1,80 @@
 # coding=utf-8
 __author__ = 'CRay'
 
-import codecs
-from ConfigParser import ConfigParser
-""" 画scatter图，证明图片质量有差别 """
+"""
+画scatter图，证明图片质量有差别
+dict_pic_quality:  {page1: {pic: [show, click], ....}, page2: {pic: [show, click]...}}
+"""
+import os
+from lib import Function
+from lib.Config import Config
 
 
-def quality(_type):
-    cf = ConfigParser()
-    cf.read('..\\config\\data.conf')
-    source_path = cf.get('dataset', 'path')
-    action = int(cf.get('type', 'type'))
+def quality(st_time, end_time, min_show):
+    cf = Config('data.conf')
+    fin_path = cf.get('path', 'filter_data')
+    chart_path = cf.get('path', 'chart_result')
+    list_time = Function.get_time_list(st_time, end_time)
+    dict_pic_quality = {}
+    for day in list_time:
+        folder_path = fin_path + day
+        if os.path.exists(folder_path):
+            for i in range(0, 24):
+                temp_name = ''
+                if i < 10:
+                    temp_name = '0'
+                file_in_pic = folder_path + '\\pic_' + temp_name + str(i)
+                file_in_result = folder_path + '\\result_' + temp_name + str(i)
+                if os.path.exists(file_in_result):
+                    fin_result = open(file_in_result, 'r')
+                    fin_pic = open(file_in_pic, 'r')
+                    while True:
+                        line_result = fin_result.readline()
+                        line_pic = fin_pic.readline()
+                        if not line_result:
+                            break
+                        list_result = line_result.strip('\n').strip(' ').split(' ')
+                        list_pic = line_pic.strip('\n').strip(' ').split(' ')
+                        for index, item in enumerate(list_result):
+                            list_result[index] = int(item)
+                        length = len(list_result)
+                        request_num = length/36
+                        for j in range(1, 5):
+                            if j not in dict_pic_quality:
+                                dict_pic_quality[j] = {}
+                            for k in range((j-1)*9, j*9):
+                                pic = list_pic[k]
+                                if pic not in dict_pic_quality[j]:
+                                    dict_pic_quality[j][pic] = [0, 0]
+                                if list_result[k] >= 1:
+                                    dict_pic_quality[j][pic][1] += 1
+                                dict_pic_quality[j][pic][0] += 1
+                        for j in range(2, request_num+1):
+                            page = j*4 - 3
+                            if page not in dict_pic_quality:
+                                dict_pic_quality[page] = {}
+                            for k in range((page-1)*9, page*9):
+                                pic = list_pic[k]
+                                if pic not in dict_pic_quality[page]:
+                                    dict_pic_quality[page][pic] = [0, 0]
+                                if list_result[k] >= 1:
+                                    dict_pic_quality[page][pic][1] += 1
+                                dict_pic_quality[page][pic][0] += 1
+                    fin_result.close()
+                    fin_pic.close()
 
-    if _type == 'save':
-        name = 'result_raw'
-        name2 = 'pic_raw'
-    else:
-        name = 'result'
-        name2 = 'pic'
-
-    fin_result = open(source_path+name, 'r')
-    fin_pic = open(source_path+name2, 'r')
-
-    dict_result = {}  # {0:{pic: [1, 2]}}  list值[出现的次数, 点击数量]
-    while True:
-        line_result = fin_result.readline()
-        line_pic = fin_pic.readline()
-        if not line_result:
-            break
-        result = line_result.strip('\n').split(' ')
-        picture = line_pic.strip('\n').split(' ')
-        length = len(result)
-        requests = length/36
-        for index, item in enumerate(result):
-            result[index] = int(item)
-        for req in range(1, requests+1):
-            page = req*4 - 3
-            if page not in dict_result:
-                dict_result[page] = {}
-            for j in range((page-1)*9, page*9):  # 计算指定请求的点击情况
-                pic = picture[j]
-                if pic not in dict_result[page]:
-                    dict_result[page][pic] = [0, 0]
-                if result[j] >= action:
-                    dict_result[page][pic][1] += 1
-                dict_result[page][pic][0] += 1
-    print_result(dict_result)
-    fin_result.close()
-    fin_pic.close()
-
-
-def print_result(result):
-    cf = ConfigParser()
-    cf.read('..\\config\\data.conf')
-    chart_data = cf.get('dataset', 'chart')
-    output = []
-    for page in result:
-        temp = result[page]
-        num = len(temp)
-        num *= 0.1  # 选取呈现量为前10%的数据
-        num = int(num)
-        tuple_sorted = sorted(temp.items(), key=lambda d: d[1][0], reverse=True)
-        # [(1, [4, 1]), (2, [5, 2])]
-        tuple_sorted = tuple_sorted[0: num]
-        for j in range(0, num):
-            if tuple_sorted[j][1][0] < 100:
-                continue
-            click_cnt = tuple_sorted[j][1][1]
-            show_cnt = tuple_sorted[j][1][0]
-            probability = round(float(click_cnt)/show_cnt, 3)
-            output.append([page, probability])
-    fout = open(chart_data+'3-pic-quality.result', 'w')
-    output_str = str(output)
-    fout.write(output_str)
+    list_output = []
+    for page in dict_pic_quality:
+        if page <= 80:
+            for pic in dict_pic_quality[page]:
+                info = dict_pic_quality[page][pic]
+                if info[0] >= min_show:
+                    prob = float(info[1])/info[0]
+                    list_output.append([page, round(prob, 3)])
+    name = '4-1-pic-quality_'+st_time+'_'+end_time+'.result'
+    fout = open(chart_path+name, 'w')
+    output_str = str(list_output)
+    fout.write('图片质量: \n\n'+output_str)
     fout.close()
 
 
