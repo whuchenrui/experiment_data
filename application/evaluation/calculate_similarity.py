@@ -4,23 +4,26 @@ __author__ = 'CRay'
 import itertools
 from lib import Function
 from lib.Mongo import Mongo
-
+from datetime import datetime
 
 # 方法: Kendall's τ method.  引自: 《2002_Optimizing search engines using click through》
-def calculate_similarity(ranking_main, intersection):
+def calculate_similarity(ranking_a, ranking_b):
     """
     计算两个序列的相似度, 方法可优化之处: 缩小 ranking_main大小, 或改用dict存储 (大量时间损耗在index方法上)
     """
     concordant = 0
     discordant = 0
-    for combination in itertools.combinations(intersection, 2):
+    for combination in itertools.combinations(ranking_a, 2):
         p1 = combination[0]
         p2 = combination[1]
-        result = (ranking_main.index(p1)-ranking_main.index(p2)) * (intersection.index(p1)-intersection.index(p2))
-        if result > 0:
-            concordant += 1
-        else:
-            discordant += 1
+        try:
+            result = ranking_b.index(p2)-ranking_b.index(p1)
+            if result > 0:
+                concordant += 1
+            else:
+                discordant += 1
+        except:
+            pass   # 当图片不在list 跳过
     if (concordant + discordant) > 0:
         temp = float(concordant-discordant)/(concordant+discordant)
         similarity = round(temp, 4)
@@ -54,7 +57,8 @@ def get_pic_group(st_time, end_time, page_num):
                     for pic in selected_pic:
                         dict_page_pic_group[page].add(pic)
             else:
-                print rank_time, 'is missing!'
+                # print rank_time, 'is missing!'
+                pass
     mongo.close()
     return dict_page_pic_group
 
@@ -66,10 +70,12 @@ def get_test_data_ranking(st_time, end_time, pic_group, target_ranking):
     dict_pic_click_info = {}
     mongo.set_collection('pic_click_info')
     set_target_ranking = set(target_ranking)
+    same_group = 0
     for page in pic_group:
         if page not in dict_pic_click_info:
             dict_pic_click_info[page] = {}
         intersection = set_target_ranking & pic_group[page]
+        same_group += len(intersection)
         for pic in intersection:
             if pic not in dict_pic_click_info[page]:
                 dict_pic_click_info[page][pic] = [0, 0]
@@ -82,6 +88,8 @@ def get_test_data_ranking(st_time, end_time, pic_group, target_ranking):
                             dict_pic_click_info[page][pic][0] += pic_info[day][str(page)][0]  # mongo 中page是字符串
                             dict_pic_click_info[page][pic][1] += pic_info[day][str(page)][1]
     mongo.close()
+    pic_group_length = len(pic_group)
+    print '平均共同图片数为: ', str(int(same_group)/pic_group_length)
     # end
 
     # 处理结果输出, 输出按照点击概率排序的图片列表
@@ -105,14 +113,23 @@ def get_test_data_ranking(st_time, end_time, pic_group, target_ranking):
     return dict_pic_click_info, dict_result
 
 
-def draw_chart(compare_ranking, input_dict):
+def draw_chart(model_ranking, test_ranking):  # test_ranking 是取交集后,按照点击概率逆序排列的图片集合
     result = []
-    for page in input_dict:
-        second_ranking = input_dict[page]
-        similarity = calculate_similarity(compare_ranking, second_ranking)
+    for page in test_ranking:
+        second_ranking = test_ranking[page]
+
+        temp = []
+        for pic in test_ranking[page]:
+            index_model = model_ranking.index(pic)
+            temp.append([index_model, pic])
+        temp.sort(key=lambda x: x[0])
+        main_ranking = []
+        for item in temp:
+            main_ranking.append(item[1])
+
+        similarity = calculate_similarity(main_ranking, second_ranking)
         result.append([page, similarity])
-        print str(page), ' ', len(second_ranking)
-    print result
+        # print str(page), ' ', len(second_ranking)
     return result
 
 
