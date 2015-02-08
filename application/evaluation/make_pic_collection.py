@@ -58,7 +58,7 @@ def data_position_bias(list_full_model):
     """
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
-    fin = open(path+'1107-1111_500_data2_pb.txt', 'r')
+    fin = open(path+'1104-1106_data2_pb.txt', 'r')
     line = fin.readline()
     list_pb_pic = line.split(',')
     fin.close()
@@ -80,7 +80,7 @@ def data_position_bias(list_full_model):
         pb.append(item[1])
     for item in list_full_output:
         full.append(item[1])
-    print valid_num
+    print '有效图片数: ', valid_num
     return pb, full, valid_num
 
 
@@ -90,14 +90,14 @@ def data_full_model(k):
     """
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
-    data_name = '1107-1111_500_data3_full'
+    data_name = '1104-1106_data3_full_normal_turn'
     fin = open(path+data_name+'.txt', 'r')
     line = fin.readline()
     list_pic = line.split(',')
-    print len(list_pic)
+    print 'full model, 图片总数: ', len(list_pic)
     list_output = list_pic[0: k]
     fin.close()
-    data_name = data_name.split('_')[1]
+    data_name = data_name.split('data3')[1]
     return list_output, data_name
 
 
