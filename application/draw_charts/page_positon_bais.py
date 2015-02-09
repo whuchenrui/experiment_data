@@ -6,14 +6,14 @@ from lib.Config import Config
 from lib import Function
 
 
-def position_bias(st_time, end_time, behavior):
+def position_bias(st_time, end_time, behavior, max_req):
     """
     :param behavior:  all 整个过滤后数据集   view 不包含save操作的集合  save 包含save操作的集合
     :return:
     dict_result    {1: [show_num, click_num]}  show_num: 当前页码一共展示多少次图片，click_num，一共被点击量
     """
     cf_data = Config('data.conf')
-    fin_path = cf_data.get('path', 'filter_data')
+    fin_path = cf_data.get('path', 'position_bias_data')
     if 'all' == behavior:
         act_value = 1
         # fin_path = cf_data.get('path', 'filter_data')
@@ -48,6 +48,8 @@ def position_bias(st_time, end_time, behavior):
                             list_result[index] = int(item)
                         length = len(list_result)
                         request_num = length/36
+                        if request_num > max_req:
+                            continue
                         for j in range(1, 5):
                             if j not in dict_result:
                                 dict_result[j] = [0, 0]
@@ -76,7 +78,7 @@ def position_bias(st_time, end_time, behavior):
             prob = float(dict_result[page][1])/dict_result[page][0]
             temp = round(prob, 4)
             b.append([page, temp])
-    fout = open(chart_path+'4-position-bias-'+behavior+'.result', 'w')
+    fout = open(chart_path+'4-position-bias-'+behavior+'_Max-'+str(max_req)+'.result', 'w')
     fout.write('column:\n')
     fout.write(str(a))
     fout.write('\n\nline:\n')
@@ -85,4 +87,4 @@ def position_bias(st_time, end_time, behavior):
 
 
 if __name__ == '__main__':
-    position_bias('2014-11-04', '2014-12-14', 'save')
+    position_bias('2014-11-04', '2014-12-14', 'all', 40)
