@@ -146,7 +146,7 @@ def filter_data(time_st, time_end):
     list_time = Function.get_time_list(time_st, time_end)
     cf = Config('data.conf')
     raw_data_path = cf.get('path', 'raw_data')
-    filter_data_output = cf.get('path', 'filter_data')
+    filter_data_output = cf.get('path', 'position_bias_data')
     act_type = int(cf.get('act_type', 'value'))
     filer_rule = FilterRule('rule.conf', act_type)   # 初始化处理过滤的类 FilterRule
     valid_cnt = 0
@@ -175,6 +175,10 @@ def filter_data(time_st, time_end):
                         list_pic = dict_file[idfa]['pic']
                         list_result = dict_file[idfa]['result']
                         length = len(list_result)
+                        length_pic = len(list_pic)
+                        if length_pic != length:
+                            print 'result number overflow the ranking!'
+                            continue
                         act_time = dict_file[idfa]['act_time']
                         is_valid = filer_rule.check_each_seq(list_result)
                         if is_valid:

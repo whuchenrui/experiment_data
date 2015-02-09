@@ -24,8 +24,8 @@ class FilterRule():
     def check_each_seq(self, result):
         length = len(result)
         request = length/36
-        if request > self.max_request_num:
-            return False
+        # if request > self.max_request_num:
+        #     return False
         click_num = FilterRule.get_click_cnt(result, self.act_type)
         if click_num == 0:
             return False
