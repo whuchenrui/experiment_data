@@ -89,7 +89,7 @@ def get_test_data_ranking(st_time, end_time, pic_group, target_ranking):
                             dict_pic_click_info[page][pic][1] += pic_info[day][str(page)][1]
     mongo.close()
     pic_group_length = len(pic_group)
-    print '平均共同图片数为: ', str(int(same_group)/pic_group_length)
+    average_pic_num = int(same_group)/pic_group_length
     # end
 
     # 处理结果输出, 输出按照点击概率排序的图片列表
@@ -110,7 +110,7 @@ def get_test_data_ranking(st_time, end_time, pic_group, target_ranking):
         for item in temp_rank:
             list_pic.append(item[1])
         dict_result[page] = list_pic
-    return dict_pic_click_info, dict_result
+    return dict_pic_click_info, dict_result, average_pic_num
 
 
 def draw_chart(model_ranking, test_ranking):  # test_ranking 是取交集后,按照点击概率逆序排列的图片集合
