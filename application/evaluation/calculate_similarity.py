@@ -69,7 +69,8 @@ def get_test_data_ranking(st_time, end_time, pic_group):
     list_time = Function.get_time_list(st_time, end_time)
     mongo = Mongo('kdd', 'hour_ranking')
     dict_pic_click_info = {}
-    mongo.set_collection('pic_click_info')
+    db_name = 'pic_info_all'
+    mongo.set_collection(db_name)
     # set_target_ranking = set(target_ranking)
     for page in pic_group:
         if page not in dict_pic_click_info:
@@ -166,13 +167,13 @@ def ndcg_similarity(ideal_ranking, full_ranking):
         if pic not in full_ranking:
             continue
         if i < rel_1:
+            rel = 12
+        elif i < rel_2:
             rel = 8
-        # elif i < rel_2:
-        #     rel = 3
         elif i < rel_3:
+            rel = 4
+        elif i < rel_4:
             rel = 2
-        # elif i < rel_4:
-        #     rel = 1
         else:
             rel = 0
         rel_index = i + 1

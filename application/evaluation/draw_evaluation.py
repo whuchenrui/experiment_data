@@ -6,14 +6,14 @@ __author__ = 'CRay'
 import calculate_similarity
 import make_pic_collection
 from lib.Config import Config
-from datetime import datetime
 
 
-def draw_evaluation(train_st, train_end, pic_num, test_st, test_end, page_num):
+def draw_evaluation(behavior, train_st, train_end, pic_num, test_st, test_end, page_num, data2, data3):
     test_group = calculate_similarity.get_pic_group(test_st, test_end, page_num)
-    data1_click, data2_prob = make_pic_collection.test_data_baseline_all(train_st, train_end)
-    data3_pb = make_pic_collection.test_data_position_bias()
-    data4_full, data_name = make_pic_collection.test_data_full_model()
+    data1_click, data2_prob = make_pic_collection.test_data_baseline_all(behavior, train_st, train_end)
+    data3_pb = make_pic_collection.test_data_position_bias(data2)
+    data4_full, data_name = make_pic_collection.test_data_full_model(data3)
+
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
     fout = open(path+'four_ranking.txt', 'w')
@@ -48,7 +48,7 @@ def draw_evaluation(train_st, train_end, pic_num, test_st, test_end, page_num):
     cf_data = Config('data.conf')
     data_path = cf_data.get('path', 'dataset_path')
     chart_path = cf_data.get('path', 'chart_result')
-    file_name = 'train_'+train_st+'_'+train_end+'_K='+str(pic_num)+'_average='+str(average_pic_num)+'_test_'+test_st+'_'+test_end+'_L='+str(page_num)+data_name+'_union'
+    file_name = behavior+'_train_'+train_st+'_'+train_end+'_K='+str(pic_num)+'_average='+str(average_pic_num)+'_test_'+test_st+'_'+test_end+'_L='+str(page_num)+data_name+'_union'
     fout_data = open(data_path+file_name+'.data', 'w')
     fout_data.write('Baseline click data: \n' + str(similarity_click) + '\n\n')
     fout_data.write('Baseline prob data: \n' + str(similarity_prob) + '\n\n')
@@ -67,12 +67,12 @@ def draw_evaluation(train_st, train_end, pic_num, test_st, test_end, page_num):
     fout_html.close()
 
 
-def draw_ndcg():
+def draw_ndcg(behavior, data_name):
     similarity_click, similarity_prob, similarity_pb, similarity_full = calculate_similarity.prepare_ndcg_data()
 
     cf_data = Config('data.conf')
     chart_path = cf_data.get('path', 'chart_result')
-    file_name = 'nDCG'
+    file_name = behavior+'_nDCG' + data_name
     fout_html = open(chart_path+file_name+'.html', 'w')
     fout_html.write('<!doctype html><html lang="en"><meta charset="UTF-8"><head><script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script><script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script><script>$(function () { $("#container").highcharts({ chart: { zoomType: "xy" }, title: { text: "nDCG" }, xAxis: [{ tickInterval: 1 }], yAxis: [{ title: { text: "相似度" }}], tooltip: { shared: true }, series: [{ name: "图片点击次数", data:')
     fout_html.write(str(similarity_click))
@@ -82,9 +82,3 @@ def draw_ndcg():
     fout_html.write(str(similarity_full))
     fout_html.write(',name: "完整模型" }] }); }); </script></head><body><div id="container" style="min-width:700px;height:400px"></div></body></html>')
     fout_html.close()
-
-
-if __name__ == '__main__':
-    now = datetime.now()
-    draw_ndcg()
-    print datetime.now() - now

@@ -1,15 +1,15 @@
 # coding=utf-8
 __author__ = 'CRay'
 
-import os
 from lib import Function
 from lib.Config import Config
 from lib.Mongo import Mongo
 
 
-def test_data_baseline_all(st_time, end_time):
+def test_data_baseline_all(behavior, st_time, end_time):
     list_time = Function.get_time_list(st_time, end_time)
-    mongo = Mongo('kdd', 'pic_click_info')
+    db_name = 'pic_info_' + behavior
+    mongo = Mongo('kdd', db_name)
     list_pic_click = []
     list_pic_probability = []
     record = mongo.collection.find({}, {'_id': 0})
@@ -23,16 +23,15 @@ def test_data_baseline_all(st_time, end_time):
                     for page in r[day]:
                         click_num += r[day][page][1]
                         show_num += r[day][page][0]
-            list_pic_click.append([click_num, pic])
             if show_num > 0:
                 prob = float(click_num)/show_num
                 list_pic_probability.append([round(prob, 4), pic])
             else:
                 list_pic_probability.append([0, pic])
+            list_pic_click.append([click_num, pic])
     else:
         print '记录数为0'
     mongo.close()
-    print 'dict number: ', len(list_pic_click)
     list_pic_click.sort(key=lambda x: x[0], reverse=True)
     list_pic_probability.sort(key=lambda x: x[0], reverse=True)
     list_out_click = []
@@ -41,28 +40,27 @@ def test_data_baseline_all(st_time, end_time):
         list_out_click.append(item[1])
     for item in list_pic_probability:
         list_out_prob.append(item[1])
+    print 'baseline 图片总数: ', len(list_out_click), len(list_pic_probability)
     return list_out_click, list_out_prob
 
 
-def test_data_position_bias():
+def test_data_position_bias(data_name):
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
-    data_name = '1104-1111_data2_pb'
     fin = open(path+data_name+'.txt', 'r')
     line = fin.readline()
-    list_pic = line.split(',')
+    list_pic = line.strip('\r\n').split(',')
     fin.close()
     print 'pb, 图片总数: ', len(list_pic)
     return list_pic
 
 
-def test_data_full_model():
+def test_data_full_model(data_name):
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
-    data_name = '1104-1111_data3_full_normal_turn'
     fin = open(path+data_name+'.txt', 'r')
     line = fin.readline()
-    list_pic = line.split(',')
+    list_pic = line.strip('\r\n').split(',')
     fin.close()
     print 'full model, 图片总数: ', len(list_pic)
     data_name = data_name.split('data3')[1]
@@ -81,7 +79,6 @@ def select_share_pic(list_click_num, list_prob, list_position_bias, list_full_mo
     rank_pb = list_position_bias[0: init_number]
     rank_full = list_full_model[0: init_number]
     intersection = set(rank_click) | set(rank_prob) | set(rank_pb) | set(rank_full)
-    print 'intersection: ', str(len(intersection))
     temp_rank_click = []
     temp_rank_prob = []
     temp_rank_pb = []
@@ -120,11 +117,12 @@ def select_share_pic(list_click_num, list_prob, list_position_bias, list_full_mo
         # print new_rank_prob
         # print new_rank_pb
         # print new_rank_full
-        print '集合大小: ', len(new_rank_click)
+        print 'Union size: ', len(new_rank_click)
         return new_rank_click, new_rank_prob, new_rank_pb, new_rank_full
     else:
         print '集合不相等, ', str(len(new_rank_click)), str(len(new_rank_prob)), \
             str(len(new_rank_pb)), str(len(new_rank_full))
+        return new_rank_click, new_rank_prob, new_rank_pb, new_rank_full
 
 
 if __name__ == '__main__':
@@ -133,5 +131,4 @@ if __name__ == '__main__':
     # data3_full_raw = data_full_model(4000)
     # data2_pb, data3_full, pic_num = data_position_bias(data3_full_raw)
     # Pic_group_baseline = data_baseline(St_time, End_time, data2_pb)
-    a = 5
-    print a%5
+    click, prob = test_data_baseline_all('2014-11-11', '2014-11-11')

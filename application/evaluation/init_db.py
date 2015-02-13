@@ -14,7 +14,7 @@ mongodb 中有三张表
 """
 
 
-def count_pic_info(st_time, end_time, min_show_num):
+def count_pic_info(st_time, end_time, min_show_num, behavior):
     cf_data = Config('data.conf')
     filter_data = cf_data.get('path', 'filter_data')
     dataset_path = cf_data.get('path', 'dataset_path')
@@ -38,6 +38,14 @@ def count_pic_info(st_time, end_time, min_show_num):
                         line_result = fin_result.readline()
                         if not line_result:
                             break
+                        if behavior == 'all':
+                            pass
+                        elif behavior == 'save':
+                            if '2' not in line_result:
+                                continue
+                        elif behavior == 'click':
+                            if '2' in line_result:
+                                continue
                         list_pic = line_pic.strip('\n').strip(' ').split(' ')
                         list_result = line_result.strip('\n').strip(' ').split(' ')
                         length = len(list_result)
@@ -58,7 +66,7 @@ def count_pic_info(st_time, end_time, min_show_num):
                             dict_result[picture][day][page][0] += 1
                     fin_pic.close()
                     fin_result.close()
-        print 'pic info: ', day
+        print 'pic info ' + behavior + ': ', day
 
     dict_output = {}
     for p in dict_result:
@@ -74,19 +82,27 @@ def count_pic_info(st_time, end_time, min_show_num):
                 if page not in dict_output[p][day]:
                     dict_output[p][day][page] = page_info
 
-    fout = open(dataset_path+'pic_info', 'w')
+    fout = open(dataset_path+'pic_info_'+behavior, 'w')
     fout.write(str(dict_output))
     fout.close()
 
 
-def init_mongodb_pic_info():
+def init_mongodb_pic_info(behavior):
     """
     该函数只需要初始化数据库一次, 写入到kdd数据库中的 pic_click_info 表
     """
     cf_data = Config('data.conf')
     dataset_path = cf_data.get('path', 'dataset_path')
-    mongo = Mongo('kdd', 'pic_click_info')
-    fin = open(dataset_path+'pic_info', 'r')
+    if behavior == 'all':
+        db_name = 'pic_info_all'
+    elif behavior == 'save':
+        db_name = 'pic_info_save'
+    elif behavior == 'click':
+        db_name = 'pic_info_click'
+    else:
+        return False
+    mongo = Mongo('kdd', db_name)
+    fin = open(dataset_path+db_name, 'r')
     dict_raw = eval(fin.read())  # 这里耗时最大, 文件16M
     for pic in dict_raw:
         each_line = {}
@@ -153,4 +169,6 @@ if __name__ == '__main__':
     # count_pic_info('2014-11-04', '2014-12-14', 50)
     # init_mongodb_pic_info()
     # init_mongodb_hour_ranking()
-    init_group_pic_pb()
+    # init_group_pic_pb()
+    count_pic_info('2014-11-04', '2014-12-14', 0, 'click')
+    init_mongodb_pic_info('click')
