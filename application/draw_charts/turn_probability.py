@@ -66,8 +66,7 @@ def turn_probability(st_time, end_time, behavior, min_page, max_page, back_st, b
                             page_num = not_null_position/9
                         else:
                             page_num = not_null_position/9 + 1
-                        if page_num not in dict_distribution:
-                            dict_distribution[page_num] = 0
+                        dict_distribution.setdefault(page_num, 0)
                         dict_distribution[page_num] += 1
                         if page_num < min_page:
                             continue
@@ -80,8 +79,7 @@ def turn_probability(st_time, end_time, behavior, min_page, max_page, back_st, b
                             for j in range(start, end):
                                 if list_result[j] >= act_value:
                                     click_num += 1
-                            if click_num not in dict_result[page]:
-                                dict_result[page][click_num] = [0, 0]
+                            dict_result[page].setdefault(click_num, [0, 0])
                             dict_result[page][click_num][1] += 1
                         # 统计序列最后一次操作情况, 当序列超过统计长度, 则他在指定范围内的所有操作都视为翻页
                         if page_num <= max_page:
@@ -91,8 +89,7 @@ def turn_probability(st_time, end_time, behavior, min_page, max_page, back_st, b
                             for j in range(start, end):
                                 if list_result[j] >= act_value:
                                     click_num += 1
-                            if click_num not in dict_result[page_num]:
-                                dict_result[page_num][click_num] = [0, 0]
+                            dict_result[page_num].setdefault(click_num, [0, 0])
                             dict_result[page_num][click_num][0] += 1
                     fin_result.close()
         print 'turn probability:  ', day
