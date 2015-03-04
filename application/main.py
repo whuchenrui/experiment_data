@@ -30,25 +30,25 @@ def draw_chart(st_time, end_time, behavior, max_req):
         print traceback.format_exc()
 
 
-def exec_evaluation(behavior, train_st, train_end, pic_num, test_st, test_end, page_num, data2, data3):
-    draw_evaluation.draw_evaluation(behavior, train_st, train_end, pic_num, test_st, test_end, page_num, data2, data3)
+def exec_evaluation(behavior, train_time, pic_num, test_st, test_end, page_num, data2, data3):
+    draw_evaluation.draw_evaluation(behavior, train_time, pic_num, test_st, test_end, page_num, data2, data3)
 
 
 if __name__ == '__main__':
-    Train_st_time = '2014-11-04'
-    Train_end_time = '2014-11-05'
+    # 时间设置为字典格式, key为日期, value 为小时. 查询会遍历这些指定的时间
+    Train_time = {'2014-11-13': ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23']}
 
-    Test_st_time = '2014-11-04'
-    Test_end_time = '2014-11-05'
+    Test_st_time = '2014-11-14'
+    Test_end_time = '2014-11-18'
 
-    data2_name = '1107-1111_data2_pb'
-    data3_name = '1107-1111_data3_full_initial_para_window_8_extra_end_iter10'
+    data2_name = 'rank-13-13-pos-save'
+    data3_name = 'rank-13-13-turn2-save'
     L = 40      # 展现的页码
-    Union_size = [800]
-    Behavior = 'click'   # 3个值, save(所有序列都含有2), click(所有序列都没有2), all(前面2个序列汇总)
-                         # behavior 只印象train集合中, 按照点击数量和点击概率排序的ranking, 不作用于test集合
+    Union_size = [1000]
+    Behavior = 'save'    # 3个值, save(所有序列都含有2), click(所有序列都没有2), all(前面2个序列汇总)
+                         # behavior 只影响train集合中, 按照点击数量和点击概率排序的ranking, 不作用于test集合
     for pic_number in Union_size:
         now = datetime.now()
-        exec_evaluation(Behavior, Train_st_time, Train_end_time, pic_number, Test_st_time, Test_end_time, L, data2_name, data3_name)
+        exec_evaluation(Behavior, Train_time, pic_number, Test_st_time, Test_end_time, L, data2_name, data3_name)
         print 'K='+str(pic_number)+' 用时: ', datetime.now()-now
-    draw_evaluation.draw_ndcg(Behavior, data3_name)
+    # draw_evaluation.draw_ndcg(Behavior, data3_name)
