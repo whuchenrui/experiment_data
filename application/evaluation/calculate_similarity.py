@@ -84,10 +84,16 @@ def get_test_data_ranking(st_time, end_time, pic_group):
             if record.count() > 0:
                 pic_info = record[0]
                 for day in list_time:
-                    if day in pic_info:
-                        if str(page) in pic_info[day]:   # page 为str类型
-                            dict_pic_click_info[page][pic][0] += pic_info[day][str(page)][0]  # mongo 中page是字符串
-                            dict_pic_click_info[page][pic][1] += pic_info[day][str(page)][1]
+                    for t in range(0, 24):
+                        if t < 10:
+                            hour = '0' + str(t)
+                        else:
+                            hour = str(t)
+                        full_time = day + ':' + hour
+                        if full_time in pic_info:
+                            if pic_info[full_time][2] == page:
+                                dict_pic_click_info[page][pic][0] += pic_info[full_time][0]
+                                dict_pic_click_info[page][pic][1] += pic_info[full_time][1]
     mongo.close()
     # end
 

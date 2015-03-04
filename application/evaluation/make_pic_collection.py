@@ -6,8 +6,7 @@ from lib.Config import Config
 from lib.Mongo import Mongo
 
 
-def test_data_baseline_all(behavior, st_time, end_time):
-    list_time = Function.get_time_list(st_time, end_time)
+def train_data_baseline_all(behavior, dict_time):
     db_name = 'pic_info_' + behavior
     mongo = Mongo('kdd', db_name)
     list_pic_click = []
@@ -18,11 +17,12 @@ def test_data_baseline_all(behavior, st_time, end_time):
             pic = r['pid']
             click_num = 0
             show_num = 0
-            for day in list_time:
-                if day in r:
-                    for page in r[day]:
-                        click_num += r[day][page][1]
-                        show_num += r[day][page][0]
+            for day in dict_time:
+                for hour in dict_time[day]:
+                    full_time = day + ':' + hour
+                    if full_time in r:
+                        click_num += r[full_time][1]
+                        show_num += r[full_time][0]
             if show_num > 0:
                 prob = float(click_num)/show_num
                 list_pic_probability.append([round(prob, 4), pic])
@@ -44,7 +44,7 @@ def test_data_baseline_all(behavior, st_time, end_time):
     return list_out_click, list_out_prob
 
 
-def test_data_position_bias(data_name):
+def train_data_position_bias(data_name):
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
     fin = open(path+data_name+'.txt', 'r')
@@ -55,7 +55,7 @@ def test_data_position_bias(data_name):
     return list_pic
 
 
-def test_data_full_model(data_name):
+def train_data_full_model(data_name):
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
     fin = open(path+data_name+'.txt', 'r')
@@ -63,7 +63,7 @@ def test_data_full_model(data_name):
     list_pic = line.strip('\r\n').split(',')
     fin.close()
     print 'full model, 图片总数: ', len(list_pic)
-    data_name = data_name.split('data3')[1]
+    # data_name = data_name.split('data3')[1]
     return list_pic, data_name
 
 
@@ -131,4 +131,4 @@ if __name__ == '__main__':
     # data3_full_raw = data_full_model(4000)
     # data2_pb, data3_full, pic_num = data_position_bias(data3_full_raw)
     # Pic_group_baseline = data_baseline(St_time, End_time, data2_pb)
-    click, prob = test_data_baseline_all('2014-11-11', '2014-11-11')
+    click, prob = train_data_baseline_all('2014-11-11', '2014-11-11')

@@ -8,11 +8,11 @@ import make_pic_collection
 from lib.Config import Config
 
 
-def draw_evaluation(behavior, train_st, train_end, pic_num, test_st, test_end, page_num, data2, data3):
+def draw_evaluation(behavior, train_time, pic_num, test_st, test_end, page_num, data2, data3):
     test_group = calculate_similarity.get_pic_group(test_st, test_end, page_num)
-    data1_click, data2_prob = make_pic_collection.test_data_baseline_all(behavior, train_st, train_end)
-    data3_pb = make_pic_collection.test_data_position_bias(data2)
-    data4_full, data_name = make_pic_collection.test_data_full_model(data3)
+    data1_click, data2_prob = make_pic_collection.train_data_baseline_all(behavior, train_time)
+    data3_pb = make_pic_collection.train_data_position_bias(data2)
+    data4_full, data_name = make_pic_collection.train_data_full_model(data3)
 
     cf_data = Config('data.conf')
     path = cf_data.get('path', 'dataset_path')
@@ -45,10 +45,16 @@ def draw_evaluation(behavior, train_st, train_end, pic_num, test_st, test_end, p
     similarity_click, average_pic_num = calculate_similarity.draw_chart(ranking_click, test_ranking)
     print 'average', str(average_pic_num)
 
+
+    days = train_time.keys()
+    days.sort(reverse=True)
+    train_st = days[-1]
+    train_end = days[0]
+
     cf_data = Config('data.conf')
     data_path = cf_data.get('path', 'dataset_path')
     chart_path = cf_data.get('path', 'chart_result')
-    file_name = behavior+'_train_'+train_st+'_'+train_end+'_K='+str(pic_num)+'_average='+str(average_pic_num)+'_test_'+test_st+'_'+test_end+'_L='+str(page_num)+data_name+'_union'
+    file_name = behavior+'_train_'+train_st+'_'+train_end+'_K='+str(pic_num)+'_average='+str(average_pic_num)+'_test_'+test_st+'_'+test_end+'_'+data_name
     fout_data = open(data_path+file_name+'.data', 'w')
     fout_data.write('Baseline click data: \n' + str(similarity_click) + '\n\n')
     fout_data.write('Baseline prob data: \n' + str(similarity_prob) + '\n\n')
