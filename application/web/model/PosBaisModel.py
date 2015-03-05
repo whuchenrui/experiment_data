@@ -68,10 +68,11 @@ class PositionBias(object):
             for i in range(0, len(sorted_tuple)):
                 pic_temp = {}
                 page = int(sorted_tuple[i][0])
-                probability = round(float(sorted_tuple[i][1][1])/sorted_tuple[i][1][0], 3)
+                # 更改为save/click [show, click, save, day]
+                probability = round(float(sorted_tuple[i][1][2])/sorted_tuple[i][1][1], 3)
                 pic_temp["x"] = page
                 pic_temp["y"] = probability
-                pic_temp["z"] = sorted_tuple[i][1][2]
+                pic_temp["z"] = sorted_tuple[i][1][3]
                 list_temp.append(pic_temp)
             list_temp_sorted = sorted(list_temp, key=operator.itemgetter('x'))
             dict_per_pic["name"] = int(item[0])
