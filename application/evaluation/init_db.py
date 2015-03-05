@@ -3,6 +3,7 @@ __author__ = 'CRay'
 
 import os
 import sys
+import traceback
 sys.path.append(r'../../')
 from lib import Function
 from lib.Config import Config
@@ -60,9 +61,11 @@ def count_pic_info(st_time, end_time, min_show_num, behavior):
                             if picture not in dict_result:
                                 dict_result[picture] = {}
                             if full_time not in dict_result[picture]:
-                                dict_result[picture][full_time] = [0, 0, page]  # [show, click, page]
+                                dict_result[picture][full_time] = [0, 0, 0, page]  # [show, click, save, page]
                             if list_result[j] >= 1:
                                 dict_result[picture][full_time][1] += 1
+                            if list_result[j] == 2:
+                                dict_result[picture][full_time][2] += 1
                             dict_result[picture][full_time][0] += 1
                     fin_pic.close()
                     fin_result.close()
@@ -164,9 +167,13 @@ if __name__ == '__main__':
     # init_mongodb_pic_info()
     # init_mongodb_hour_ranking()
     # init_group_pic_pb()
-    count_pic_info('2014-11-04', '2014-12-14', 0, 'all')
-    count_pic_info('2014-11-04', '2014-12-14', 0, 'click')
-    count_pic_info('2014-11-04', '2014-12-14', 0, 'save')
-    init_mongodb_pic_info('all')
-    init_mongodb_pic_info('click')
-    init_mongodb_pic_info('save')
+    # count_pic_info('2014-11-04', '2014-12-14', 0, 'all')
+    # count_pic_info('2014-11-04', '2014-12-14', 0, 'click')
+    # count_pic_info('2014-11-04', '2014-12-14', 0, 'save')
+    # init_mongodb_pic_info('all')
+    # init_mongodb_pic_info('click')
+    # init_mongodb_pic_info('save')
+    try:
+        init_group_pic_pb()
+    except:
+        print traceback.format_exc()

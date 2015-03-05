@@ -91,7 +91,7 @@ def get_test_data_ranking(st_time, end_time, pic_group):
                             hour = str(t)
                         full_time = day + ':' + hour
                         if full_time in pic_info:
-                            if pic_info[full_time][2] == page:
+                            if pic_info[full_time][3] == page:
                                 dict_pic_click_info[page][pic][0] += pic_info[full_time][0]
                                 dict_pic_click_info[page][pic][1] += pic_info[full_time][1]
     mongo.close()
