@@ -55,7 +55,7 @@ def merge_pic_click():
             dict_group_pic[group_id] = pics
     fin.close()
 
-    fin = open(dataset_path+'pic_info', 'r')
+    fin = open(dataset_path+'pic_info_all', 'r')
     dict_raw = eval(fin.read())
     dict_output = {}
     for group_id in dict_group_pic:
@@ -66,17 +66,21 @@ def merge_pic_click():
             if pic not in dict_raw:
                 print 'pic not in data set: ', pic
             else:
-                for day in dict_raw[pic]:
-                    for page in dict_raw[pic][day]:
-                        if page not in dict_output[group_id]:
-                            dict_output[group_id][page] = [0, 0, day]
-                            dict_output[group_id][page][0] = dict_raw[pic][day][str(page)][0]
-                            dict_output[group_id][page][1] = dict_raw[pic][day][str(page)][1]
-                        else:
-                            dict_output[group_id][page][0] += dict_raw[pic][day][str(page)][0]
-                            dict_output[group_id][page][1] += dict_raw[pic][day][str(page)][1]
-                            if day not in dict_output[group_id][page][2]:
-                                dict_output[group_id][page][2] += ',' + day
+                for full_time in dict_raw[pic]:
+                    page = dict_raw[pic][full_time][3]
+                    page = str(page)
+                    day = full_time.split(':')[0]
+                    if page not in dict_output[group_id]:
+                        dict_output[group_id][page] = [0, 0, 0, day]
+                        dict_output[group_id][page][0] = dict_raw[pic][full_time][0]
+                        dict_output[group_id][page][1] = dict_raw[pic][full_time][1]
+                        dict_output[group_id][page][2] = dict_raw[pic][full_time][2]
+                    else:
+                        dict_output[group_id][page][0] += dict_raw[pic][full_time][0]
+                        dict_output[group_id][page][1] += dict_raw[pic][full_time][1]
+                        dict_output[group_id][page][2] += dict_raw[pic][full_time][2]
+                        if day not in dict_output[group_id][page][3]:
+                            dict_output[group_id][page][3] += ',' + day
     fin.close()
 
     fout = open(dataset_path+'group_pic_position_hour', 'w')

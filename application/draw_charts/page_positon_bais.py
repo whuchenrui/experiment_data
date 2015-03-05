@@ -28,7 +28,8 @@ def position_bias(st_time, end_time, behavior, max_req):
     chart_path = cf_data.get('path', 'chart_result')
 
     list_time = Function.get_time_list(st_time, end_time)
-    dict_result = {}  # {page: [show_num, click_num]}
+    # dict_result = {}  # {page: [show_num, click_num]}
+    dict_result = {}    # {page: [show_num, click_num, save_num]} 增加纵坐标为 save/click
     for day in list_time:
         input_path = fin_path + day
         if os.path.exists(input_path):
@@ -52,39 +53,51 @@ def position_bias(st_time, end_time, behavior, max_req):
                             continue
                         for j in range(1, 5):
                             if j not in dict_result:
-                                dict_result[j] = [0, 0]
+                                dict_result[j] = [0, 0, 0]
                             dict_result[j][0] += 9
                             for k in range((j-1)*9, j*9):
                                 if list_result[k] >= act_value:   # 这里统计点击情况
                                     dict_result[j][1] += 1
+                                if list_result[k] == 2:
+                                    dict_result[j][2] += 1
                         for j in range(2, request_num+1):
                             page = j*4 - 3
                             if page not in dict_result:
-                                dict_result[page] = [0, 0]
+                                dict_result[page] = [0, 0, 0]
                             dict_result[page][0] += 9
                             for k in range((page-1)*9, page*9):
                                 if list_result[k] >= act_value:
                                     dict_result[page][1] += 1
+                                if list_result[k] == 2:
+                                    dict_result[page][2] += 1
                     fin_result.close()
         print 'page pb: ', day
 
     ## 把dict_result按照格式输出, 画成highcharts图
-    a = []  # column
+    a1 = []  # 呈现数量
+    a2 = []  # click数量
+    a3 = []  # save数量
     b = []  # probability per page
     page_num = len(dict_result)*4
     for page in range(1, page_num):
         if page in dict_result:
-            a.append([page, dict_result[page][0]])
-            prob = float(dict_result[page][1])/dict_result[page][0]
+            a1.append([page, dict_result[page][0]])
+            a2.append([page, dict_result[page][1]])
+            a3.append([page, dict_result[page][2]])
+            prob = float(dict_result[page][2])/dict_result[page][1]  # 更改为save/click 原来为 click/show
             temp = round(prob, 4)
             b.append([page, temp])
     fout = open(chart_path+'4-position-bias-'+behavior+'_Max-'+str(max_req)+'.result', 'w')
-    fout.write('column:\n')
-    fout.write(str(a))
-    fout.write('\n\nline:\n')
+    fout.write('show number:\n')
+    fout.write(str(a1))
+    fout.write('\n\nclick number:\n')
+    fout.write(str(a2))
+    fout.write('\n\nsave number:\n')
+    fout.write(str(a3))
+    fout.write('\n\nsave/click:\n')
     fout.write(str(b))
     fout.close()
 
 
 if __name__ == '__main__':
-    position_bias('2014-11-04', '2014-12-14', 'all', 40)
+    position_bias('2014-11-04', '2014-12-14', 'all', 60)
