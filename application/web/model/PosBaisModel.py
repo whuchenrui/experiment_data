@@ -22,7 +22,7 @@ class PositionBias(object):
         file_path = cf.get('server', 'path') + name
         return file_path
 
-    def get_specific_pic(self):
+    def get_specific_pic(self, function_type):
         """
         从mongodb 数据库中读取group_pic 在不同页码上的总体点击信息
         dict_output:  {group_id: {page: [show, click, time]}}
@@ -53,11 +53,38 @@ class PositionBias(object):
             else:
                 print str(random_group), ' 不存在 '
         mongo.close()
-        list_data = PositionBias.print_pb(dict_output)
+        if function_type == 0:
+            list_data = PositionBias.print_pb(dict_output)
+        else:
+            list_data = PositionBias.print_pb_save_click(dict_output)
         return list_data
 
     @staticmethod
     def print_pb(result):
+        list_output = []
+        sorted_result = sorted(result.items(), key=lambda g: g[0])
+        for item in sorted_result:
+            dict_per_pic = {}
+            temp = item[1]
+            sorted_tuple = sorted(temp.items(), key=lambda d: d[0], reverse=True)
+            list_temp = []
+            for i in range(0, len(sorted_tuple)):
+                pic_temp = {}
+                page = int(sorted_tuple[i][0])
+                # 更改为save/click [show, click, save, day]
+                probability = round(float(sorted_tuple[i][1][1])/sorted_tuple[i][1][0], 3)
+                pic_temp["x"] = page
+                pic_temp["y"] = probability
+                pic_temp["z"] = sorted_tuple[i][1][2]
+                list_temp.append(pic_temp)
+            list_temp_sorted = sorted(list_temp, key=operator.itemgetter('x'))
+            dict_per_pic["name"] = int(item[0])
+            dict_per_pic["data"] = list_temp_sorted
+            list_output.append(dict_per_pic)
+        return list_output
+
+    @staticmethod
+    def print_pb_save_click(result):
         list_output = []
         sorted_result = sorted(result.items(), key=lambda g: g[0])
         for item in sorted_result:

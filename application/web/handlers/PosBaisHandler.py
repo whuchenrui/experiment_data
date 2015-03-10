@@ -29,9 +29,10 @@ class MainHandler(tornado.web.RequestHandler):
         else:
             max_pic_num = int(max_pic_num)
         function_type = int(self.get_argument('total', default=0, strip=True))
-        if function_type == 0:
-            entity = PositionBias(min_show, min_page, max_pic_num)
-            data = entity.get_specific_pic()
-        else:
-            data = PositionBias.merge_pics_into_one_line(min_show, min_page)
+        # if function_type == 0:
+        entity = PositionBias(min_show, min_page, max_pic_num)
+        # function_type 对应position_bias.html  0 click/show按钮  1 show/save按钮
+        data = entity.get_specific_pic(function_type)
+        # else:
+        #     data = PositionBias.merge_pics_into_one_line(min_show, min_page)
         self.write(json_encode(data))
