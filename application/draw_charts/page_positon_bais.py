@@ -51,8 +51,8 @@ def position_bias(st_time, end_time, behavior, max_req):
                         request_num = length/36
                         if request_num > max_req:
                             continue
-                        page_num = request_num * 4
-                        for j in range(1, page_num+1):
+                        # page_num = request_num * 4
+                        for j in range(1, 5):
                             if j not in dict_result:
                                 dict_result[j] = [0, 0, 0]
                             dict_result[j][0] += 9
@@ -61,16 +61,16 @@ def position_bias(st_time, end_time, behavior, max_req):
                                     dict_result[j][1] += 1
                                 if list_result[k] == 2:
                                     dict_result[j][2] += 1
-                        # for j in range(2, request_num+1):
-                        #     page = j*4 - 3
-                        #     if page not in dict_result:
-                        #         dict_result[page] = [0, 0, 0]
-                        #     dict_result[page][0] += 9
-                        #     for k in range((page-1)*9, page*9):
-                        #         if list_result[k] >= act_value:
-                        #             dict_result[page][1] += 1
-                        #         if list_result[k] == 2:
-                        #             dict_result[page][2] += 1
+                        for j in range(2, request_num+1):
+                            page = j*4 - 3
+                            if page not in dict_result:
+                                dict_result[page] = [0, 0, 0]
+                            dict_result[page][0] += 9
+                            for k in range((page-1)*9, page*9):
+                                if list_result[k] >= act_value:
+                                    dict_result[page][1] += 1
+                                if list_result[k] == 2:
+                                    dict_result[page][2] += 1
                     fin_result.close()
         print 'page pb: ', day
 
@@ -85,7 +85,7 @@ def position_bias(st_time, end_time, behavior, max_req):
             a1.append([page, dict_result[page][0]])
             a2.append([page, dict_result[page][1]])
             a3.append([page, dict_result[page][2]])
-            prob = float(dict_result[page][2])/dict_result[page][1]  # 更改为save/click, 原始为 click/show
+            prob = float(dict_result[page][2])/dict_result[page][0]  # 更改为save/show, 原始为 click/show
             temp = round(prob, 4)
             b.append([page, temp])
     fout = open(chart_path+'4-position-bias-'+behavior+'_Max-'+str(max_req)+'.result', 'w')
@@ -95,7 +95,7 @@ def position_bias(st_time, end_time, behavior, max_req):
     fout.write(str(a2))
     fout.write('\n\nsave number:\n')
     fout.write(str(a3))
-    fout.write('\n\nsave/click:\n')
+    fout.write('\n\nsave/show:\n')
     fout.write(str(b))
     fout.close()
 
