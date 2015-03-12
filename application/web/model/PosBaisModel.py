@@ -22,7 +22,7 @@ class PositionBias(object):
         file_path = cf.get('server', 'path') + name
         return file_path
 
-    def get_specific_pic(self, function_type):
+    def get_specific_pic_click_show(self):
         """
         从mongodb 数据库中读取group_pic 在不同页码上的总体点击信息
         dict_output:  {group_id: {page: [show, click, time]}}
@@ -53,14 +53,49 @@ class PositionBias(object):
             else:
                 print str(random_group), ' 不存在 '
         mongo.close()
-        if function_type == 0:
-            list_data = PositionBias.print_pb(dict_output)
-        else:
-            list_data = PositionBias.print_pb_save_click(dict_output)
+        list_data = PositionBias.print_pb_click_show(dict_output)
+        return list_data
+
+    def get_specific_pic_save_click(self):
+        """
+        从mongodb 数据库中读取group_pic 在不同页码上的总体点击信息
+        dict_output:  {group_id: {page: [show, click, time]}}
+        """
+        dict_output = {}
+        limit_group = set()
+        mongo = Mongo('kdd', 'group_pic_pb')
+        group_num = mongo.collection.find().count()
+        max_loop_num = 9999  # 避免因为选取参数过大，limit_group长度不足而陷入死循环
+        current_loop_num = 0
+        while len(limit_group) < self.max_pic_num and current_loop_num < max_loop_num:
+            current_loop_num += 1
+            random_group = random.randint(1, group_num)
+            record = mongo.collection.find({'gid': random_group}, {'_id': 0})
+            if record.count > 0:
+                record = record[0]['pinfo']
+                valid_point_num = 0
+                for page in record:
+                    if record[page][1] >= self.min_show:  # 这里过滤click过少的数据, 不是show的数量
+                        valid_point_num += 1
+                if valid_point_num >= self.min_page:
+                    if random_group not in dict_output:
+                        dict_output[random_group] = {}
+                        limit_group.add(random_group)
+                        for page in record:
+                            if page not in dict_output[random_group]:
+                                if record[page][1] >= self.min_show:  # 相应的更改这里, 改为判断click数量
+                                    dict_output[random_group][page] = record[page]
+                            else:
+                                print 'error: ', '出现相同的page, 数据有误!'
+            else:
+                print str(random_group), ' 不存在 '
+        mongo.close()
+        list_data = PositionBias.print_pb_save_click(dict_output)
+        print list_data
         return list_data
 
     @staticmethod
-    def print_pb(result):
+    def print_pb_click_show(result):
         list_output = []
         sorted_result = sorted(result.items(), key=lambda g: g[0])
         for item in sorted_result:

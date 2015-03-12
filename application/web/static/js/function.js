@@ -50,6 +50,32 @@ function paint_pb(result){
     });
 }
 
+function paint_pb_save_click(result){
+    $('#container').highcharts({
+        title: {
+            text: 'click与save的 position-bias图',
+            x: -20 //center
+        },
+        xAxis: {
+            title: {
+                text: '图片所在页数'
+            },
+            tickInterval: 1
+        },
+        yAxis:[{
+                title: {
+                    text: '概率'
+                }
+            }],
+        tooltip: {
+            formatter: function () {
+                return '第 <b>' + this.point.x + '</b> 页<br> 概率: <b>' + this.point.y + '</b><br> 时刻: ' +
+                        this.point.z;
+          }
+        },
+        series: result
+    });
+}
 
 function get_pb_data_total(){
     var min_show = $('#min_show').val();
@@ -67,7 +93,7 @@ function get_pb_data_total(){
             'total': 1
         },
         success: function(result){
-            paint_pb_normal(result);
+            paint_pb_save_click(result);
         }
     });
 }
