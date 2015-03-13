@@ -1,7 +1,6 @@
 # coding=utf-8
 __author__ = 'CRay'
 
-from lib import Function
 from lib.Config import Config
 from lib.Mongo import Mongo
 
