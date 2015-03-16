@@ -28,7 +28,7 @@ def draw_evaluation(behavior, train_time, pic_num, test_st, test_end, page_num, 
         make_train_ranking.select_share_pic(data1_click, data2_prob, data3_pb, data4_full, pic_num)
 
     test_pic_info = make_test_ranking.get_test_data_ranking(test_st, test_end, test_group, 0, 0)
-    test_ranking = make_test_ranking.sort_rank_by_click_ratio(test_pic_info)
+    test_ranking = make_test_ranking.sort_rank_by_click_show(test_pic_info)
 
     # 画 full model 的 similarity 数据
     similarity_full, average_pic_num = calculate_similarity.draw_chart(ranking_full, test_ranking)
@@ -95,11 +95,13 @@ def draw_ndcg(behavior, data_name):
 def compare_test_ranking_similarity(test_st, test_end, page_num, min_show, min_click):
     test_group = make_test_ranking.get_pic_group(test_st, test_end, page_num)
     test_pic_info = make_test_ranking.get_test_data_ranking(test_st, test_end, test_group, min_show, min_click)
-    ranking_click_show = make_test_ranking.sort_rank_by_click_ratio(test_pic_info)
-    ranking_save_click = make_test_ranking.sort_rank_by_save_ratio(test_pic_info)
+    ranking_click_show = make_test_ranking.sort_rank_by_click_show(test_pic_info)
+    ranking_save_click = make_test_ranking.sort_rank_by_save_click(test_pic_info)
+    # ranking_save_show = make_test_ranking.sort_rank_by_save_show(test_pic_info)
     list_similarity = []
     print 'click show', ranking_click_show
     print 'save, click', ranking_save_click
+    # print 'save, show', ranking_save_show
     for page in ranking_click_show:
         rank_a = ranking_click_show[page]
         rank_b = ranking_save_click[page]
@@ -110,18 +112,19 @@ def compare_test_ranking_similarity(test_st, test_end, page_num, min_show, min_c
 
     cf_data = Config('data.conf')
     chart_path = cf_data.get('path', 'chart_result')
-    file_name = 'Test_time_'+test_st+'_'+test_end+'_Min_show='+str(min_show)+'_Min_click='+str(min_click)
+    file_name = Name+'_Test_time_'+test_st+'_'+test_end+'_Min_show='+str(min_show)+'_Min_click='+str(min_click)
     fout_html = open(chart_path+file_name+'.html', 'w')
-    fout_html.write('<!doctype html><html lang="en"><meta charset="UTF-8"><head><script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script><script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script><script>$(function () { $("#container").highcharts({ chart: { zoomType: "xy" }, title: { text: "nDCG" }, xAxis: [{ tickInterval: 1 }], yAxis: [{ title: { text: "相似度" }}], tooltip: { shared: true }, series: [{ name: "click/show 与 save/click相似度", data:')
+    fout_html.write('<!doctype html><html lang="en"><meta charset="UTF-8"><head><script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script><script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script><script>$(function () { $("#container").highcharts({ chart: { zoomType: "xy" }, title: { text: "Click_show与'+Name+'的相似度" }, xAxis: [{ tickInterval: 1 }], yAxis: [{ title: { text: "相似度" }}], tooltip: { shared: true }, series: [{ name: "Click_show 与'+Name+'相似度", data:')
     fout_html.write(str(list_similarity))
     fout_html.write('}] }); }); </script></head><body><div id="container" style="min-width:700px;height:400px"></div></body></html> ')
     fout_html.close()
 
 
 if __name__ == '__main__':
-    Test_st = '2014-11-14'
-    Test_end = '2014-11-18'
+    Test_st = '2014-12-01'
+    Test_end = '2014-12-07'
     Page_num = 40
     Min_show = 1000
     Min_click = 30
+    Name = 'Save_click'
     compare_test_ranking_similarity(Test_st, Test_end, Page_num, Min_show, Min_click)

@@ -81,7 +81,7 @@ def get_test_data_ranking(st_time, end_time, pic_group, min_show, min_click):
 
 
 # 按照click/show由高到低排序, 计算出指定时间范围内, test数据集的每一页上的图片的排序
-def sort_rank_by_click_ratio(dict_pic_click_info):
+def sort_rank_by_click_show(dict_pic_click_info):
     # 处理结果输出, 输出按照点击概率排序的图片列表
     dict_result = {}
     for page in dict_pic_click_info:
@@ -104,7 +104,7 @@ def sort_rank_by_click_ratio(dict_pic_click_info):
 
 
 # 按照save/click由高到低排序, 计算出指定时间范围内, test数据集的每一页上的图片的排序
-def sort_rank_by_save_ratio(dict_pic_click_info):
+def sort_rank_by_save_click(dict_pic_click_info):
     # 处理结果输出, 输出按照点击概率排序的图片列表
     dict_result = {}
     for page in dict_pic_click_info:
@@ -115,6 +115,28 @@ def sort_rank_by_save_ratio(dict_pic_click_info):
         for pic in dict_pic_click_info[page]:
             if dict_pic_click_info[page][pic][0] > 0:
                 prob = float(dict_pic_click_info[page][pic][2])/dict_pic_click_info[page][pic][1]  # 这里控制排序方式
+                temp_rank.append([round(prob, 4), pic])
+            else:
+                # 数据库中数据过滤了呈现<50的记录,所以该图片如果几天内没有出现在这一页,那么这一页上的呈现就为0
+                pass
+        temp_rank.sort(key=lambda x: x[0], reverse=True)
+        for item in temp_rank:
+            list_pic.append(item[1])
+        dict_result[page] = list_pic
+    return dict_result
+
+# 按照save/show由高到低排序, 计算出指定时间范围内, test数据集的每一页上的图片的排序
+def sort_rank_by_save_show(dict_pic_click_info):
+    # 处理结果输出, 输出按照点击概率排序的图片列表
+    dict_result = {}
+    for page in dict_pic_click_info:
+        if page not in dict_result:
+            dict_result[page] = []
+        temp_rank = []  # [图片点击概率, 图片id]
+        list_pic = []
+        for pic in dict_pic_click_info[page]:
+            if dict_pic_click_info[page][pic][0] > 0:
+                prob = float(dict_pic_click_info[page][pic][2])/dict_pic_click_info[page][pic][0]  # 这里控制排序方式
                 temp_rank.append([round(prob, 4), pic])
             else:
                 # 数据库中数据过滤了呈现<50的记录,所以该图片如果几天内没有出现在这一页,那么这一页上的呈现就为0
